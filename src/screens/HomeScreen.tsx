@@ -81,13 +81,13 @@ export default function HomeScreen() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-gradient-to-r from-primary to-primary-400 text-white px-6 py-5 shadow-lg">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-1">
-            <div className="bg-white rounded-xl p-1.5 shadow-sm flex items-center justify-center">
+            <div className="bg-white rounded-xl px-3.5 py-1.5 shadow-sm flex items-center justify-center">
               <img
                 src="/Logo_Agile Assets_CMYK.png"
                 alt="Agile Assets Logo"
-                className="h-8 w-auto object-contain"
+                className="h-9 w-auto object-contain min-w-[36px]"
                 onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
               />
             </div>
@@ -99,7 +99,7 @@ export default function HomeScreen() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {/* Search & Filter */}
         <div className="flex flex-col md:flex-row gap-3 mb-6">
           <div className="flex-1 relative">
