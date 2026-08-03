@@ -31,6 +31,18 @@ export default function ReportDetailScreen() {
   const { currentReport: report, setScreen, openReport } = useAppStore();
   const [photoItems, setPhotoItems] = useState<PhotoItem[]>([]);
   const [downloading, setDownloading] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<{ url: string; title: string; caption?: string } | null>(null);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedPhoto(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Convert photo blobs to data URLs on mount
   useEffect(() => {
@@ -258,8 +270,17 @@ export default function ReportDetailScreen() {
             {photoItems.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3 print:mb-1.5 print:gap-1.5">
                 {photoItems.slice(0, 6).map((p, idx) => (
-                  <div key={idx} className="border border-slate-200 rounded-md p-1 text-center bg-white w-[130px] print:w-[110px] print:p-0.5">
-                    <img src={p.url} className="w-full h-16 print:h-11 object-cover rounded" alt={p.label} />
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedPhoto({ url: p.url, title: `${p.label} ${idx + 1}`, caption: p.caption })}
+                    className="border border-slate-200 rounded-md p-1 text-center bg-white w-[130px] print:w-[110px] print:p-0.5 cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group relative"
+                  >
+                    <div className="relative overflow-hidden rounded">
+                      <img src={p.url} className="w-full h-16 print:h-11 object-cover rounded group-hover:scale-105 transition-transform duration-200" alt={p.label} />
+                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[11px] font-bold print:hidden">
+                        🔍 ขยาย
+                      </div>
+                    </div>
                     <div className="text-[10px] print:text-[9px] text-slate-500 mt-0.5 truncate">{p.label}{p.caption ? ': ' + p.caption : ''}</div>
                   </div>
                 ))}
@@ -339,7 +360,12 @@ export default function ReportDetailScreen() {
               <div className="flex-1 border border-slate-300 px-3 py-2 print:py-1 print:px-2 rounded-sm text-center bg-white flex flex-col justify-between">
                 <div className="font-bold text-xs print:text-[10px] text-[#1B3A5F]">ผู้เข้าเยี่ยม/รายงาน (AA)</div>
                 {report.inspectorSignature ? (
-                  <img src={report.inspectorSignature} className="h-7 print:h-5 max-w-full object-contain mx-auto my-1 print:my-0.5" alt="Signature" />
+                  <img
+                    src={report.inspectorSignature}
+                    className="h-7 print:h-5 max-w-full object-contain mx-auto my-1 print:my-0.5 cursor-pointer hover:scale-110 transition-transform"
+                    alt="Signature"
+                    onClick={() => setSelectedPhoto({ url: report.inspectorSignature!, title: 'ลายเซ็นผู้เข้าเยี่ยม (Inspector Signature)' })}
+                  />
                 ) : (
                   <div className="h-7 print:h-5" />
                 )}
@@ -360,7 +386,12 @@ export default function ReportDetailScreen() {
                 <div key={idx} className="border border-slate-300 rounded-md px-3 py-2 print:py-1 print:px-2 text-center bg-white">
                   <div className="font-bold text-xs print:text-[10px] text-[#1B3A5F] mb-1 print:mb-0.5">{item.label}</div>
                   {item.data?.signature ? (
-                    <img src={item.data.signature} className="h-6 print:h-5 max-w-full object-contain mx-auto" alt="Signature" />
+                    <img
+                      src={item.data.signature}
+                      className="h-6 print:h-5 max-w-full object-contain mx-auto cursor-pointer hover:scale-110 transition-transform"
+                      alt="Signature"
+                      onClick={() => setSelectedPhoto({ url: item.data!.signature!, title: `ลายเซ็นอนุมัติ (${item.label})` })}
+                    />
                   ) : (
                     <div className="h-6 print:h-5" />
                   )}
@@ -378,6 +409,52 @@ export default function ReportDetailScreen() {
           เอกสารสัดส่วน A4 1 หน้ามาตรฐาน • ตรวจสอบข้อความและความถูกต้องก่อนบันทึก
         </div>
       </div>
+
+      {/* Photo Lightbox Modal */}
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4 print:hidden animate-in fade-in duration-200 cursor-pointer"
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] bg-gray-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col border border-gray-800 cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 bg-gray-900 border-b border-gray-800 text-white">
+              <div>
+                <h3 className="font-bold text-base sm:text-lg flex items-center gap-2">
+                  <span>🖼️</span> {selectedPhoto.title}
+                </h3>
+                {selectedPhoto.caption && (
+                  <p className="text-xs text-gray-400 mt-0.5">{selectedPhoto.caption}</p>
+                )}
+              </div>
+              <button
+                onClick={() => setSelectedPhoto(null)}
+                className="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center font-bold text-lg transition-colors"
+                title="ปิด (Esc)"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body / Image */}
+            <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-black/70 min-h-[300px]">
+              <img
+                src={selectedPhoto.url}
+                alt={selectedPhoto.title}
+                className="max-w-full max-h-[72vh] object-contain rounded-lg shadow-2xl"
+              />
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-3 bg-gray-900 text-center text-xs text-gray-400 border-t border-gray-800">
+              กด ✕ หรือกดปุ่ม Esc เพื่อปิด
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
