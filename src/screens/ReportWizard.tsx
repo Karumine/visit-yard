@@ -1,11 +1,10 @@
 // ==========================================
 // ReportWizard — 6-step wizard form
 // ==========================================
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppStore } from '../lib/store';
 import { useAutosave } from '../lib/autosave';
 import { formatTime } from '../lib/thaidate';
-import { generatePDF } from '../lib/pdf';
 import Stepper from '../components/Stepper';
 import Step1General from '../components/wizard/Step1General';
 import Step2Contacts from '../components/wizard/Step2Contacts';
@@ -13,12 +12,15 @@ import Step3Details from '../components/wizard/Step3Details';
 import Step4Observations from '../components/wizard/Step4Observations';
 import Step5Scores from '../components/wizard/Step5Scores';
 import Step6Summary from '../components/wizard/Step6Summary';
+import PDFPreviewModal from '../components/PDFPreviewModal';
 
 export default function ReportWizard() {
   const {
     currentReport, currentStep, setCurrentStep,
     updateCurrentReport, saveCurrentReport, setScreen, lastSaved
   } = useAppStore();
+
+  const [showPreview, setShowPreview] = useState(false);
 
   useAutosave();
 
@@ -52,8 +54,8 @@ export default function ReportWizard() {
     setScreen('home');
   };
 
-  const handlePreviewPDF = async () => {
-    await generatePDF(currentReport);
+  const handlePreviewPDF = () => {
+    setShowPreview(true);
   };
 
   const renderStep = () => {
@@ -151,6 +153,14 @@ export default function ReportWizard() {
           )}
         </div>
       </div>
+
+      {/* PDF Preview Modal */}
+      {showPreview && currentReport && (
+        <PDFPreviewModal
+          report={currentReport}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
     </div>
   );
 }

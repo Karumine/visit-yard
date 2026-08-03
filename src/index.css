@@ -25,8 +25,12 @@ body {
   color: #1F2937;
   margin: 0;
   padding: 0;
-  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Enable momentum scrolling for iOS/iPad WebKit */
+.overflow-y-auto, .overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Prevent iOS zoom on input focus */

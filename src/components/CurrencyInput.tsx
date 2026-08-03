@@ -1,7 +1,4 @@
-// ==========================================
-// CurrencyInput — ตัวเลข + comma + ล้านบาท
-// ==========================================
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface CurrencyInputProps {
   label: string;
@@ -11,19 +8,40 @@ interface CurrencyInputProps {
 }
 
 export default function CurrencyInput({ label, value, onChange, placeholder = '0' }: CurrencyInputProps) {
-  const formatNumber = (num: number | null): string => {
-    if (num === null) return '';
-    return num.toLocaleString('th-TH');
-  };
+  const [displayValue, setDisplayValue] = useState<string>('');
+
+  useEffect(() => {
+    if (value === null || value === undefined) {
+      setDisplayValue('');
+    } else {
+      // Only sync if parsed value differs from current parsed displayValue
+      const currentParsed = parseFloat(displayValue);
+      if (isNaN(currentParsed) || currentParsed !== value) {
+        setDisplayValue(String(value));
+      }
+    }
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9.]/g, '');
-    if (raw === '') {
-      onChange(null);
-      return;
+    const val = e.target.value;
+    // Allow digits, single decimal point
+    if (val === '' || /^\d*\.?\d*$/.test(val)) {
+      setDisplayValue(val);
+      if (val === '' || val === '.') {
+        onChange(null);
+      } else {
+        const num = parseFloat(val);
+        if (!isNaN(num)) {
+          onChange(num);
+        }
+      }
     }
-    const num = parseFloat(raw);
-    if (!isNaN(num)) onChange(num);
+  };
+
+  const handleBlur = () => {
+    if (value !== null && !isNaN(value)) {
+      setDisplayValue(String(value));
+    }
   };
 
   return (
@@ -33,8 +51,9 @@ export default function CurrencyInput({ label, value, onChange, placeholder = '0
         <input
           type="text"
           inputMode="decimal"
-          value={formatNumber(value)}
+          value={displayValue}
           onChange={handleChange}
+          onBlur={handleBlur}
           placeholder={placeholder}
           className="w-full min-h-touch px-4 py-3 pr-20 text-base border border-gray-300 rounded-xl bg-white
             focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"

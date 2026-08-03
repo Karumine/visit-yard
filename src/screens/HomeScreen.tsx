@@ -3,11 +3,12 @@
 // ==========================================
 import React, { useEffect, useState } from 'react';
 import { useAppStore } from '../lib/store';
-import { calculateAverageScore } from '../types/report';
+import { calculateAverageScore, VisitReport } from '../types/report';
 import { toThaiDateFull } from '../lib/thaidate';
 import { generatePDF } from '../lib/pdf';
 import { exportReportAsJSON, importReportFromJSON } from '../lib/storage';
 import { loadSampleData } from '../data/sampleData';
+import PDFPreviewModal from '../components/PDFPreviewModal';
 
 type FilterStatus = 'all' | 'draft' | 'completed';
 
@@ -17,6 +18,7 @@ export default function HomeScreen() {
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [previewReport, setPreviewReport] = useState<VisitReport | null>(null);
 
   useEffect(() => {
     loadReports();
@@ -171,17 +173,21 @@ export default function HomeScreen() {
               return (
                 <div
                   key={report.id}
-                  className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden
-                    hover:shadow-md transition-shadow"
+                  className={`bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ${
+                    menuOpen === report.id ? 'relative z-30' : 'relative z-0'
+                  }`}
                 >
                   <div className="flex items-stretch">
                     {/* Status bar */}
-                    <div className={`w-1.5 ${report.status === 'completed' ? 'bg-green-500' : 'bg-amber-400'}`} />
+                    <div className={`w-1.5 rounded-l-2xl ${report.status === 'completed' ? 'bg-green-500' : 'bg-amber-400'}`} />
 
                     {/* Main content */}
                     <button
-                      onClick={() => openReport(report.id)}
-                      className="flex-1 px-5 py-4 text-left"
+                      type="button"
+                      onClick={async () => {
+                        await openReport(report.id);
+                      }}
+                      className="flex-1 px-5 py-4 text-left cursor-pointer"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
@@ -213,8 +219,12 @@ export default function HomeScreen() {
                     {/* Menu button */}
                     <div className="relative flex items-center pr-3">
                       <button
-                        onClick={() => setMenuOpen(menuOpen === report.id ? null : report.id)}
-                        className="min-w-touch min-h-touch flex items-center justify-center text-gray-400"
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMenuOpen(menuOpen === report.id ? null : report.id);
+                        }}
+                        className="min-w-touch min-h-touch flex items-center justify-center text-gray-400 hover:text-gray-600 active:scale-95 transition-all"
                       >
                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
@@ -222,7 +232,7 @@ export default function HomeScreen() {
                       </button>
 
                       {menuOpen === report.id && (
-                        <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-20 min-w-[160px] py-1 overflow-hidden">
+                        <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-40 min-w-[160px] py-1 overflow-hidden">
                           <button onClick={() => { openReport(report.id); setMenuOpen(null); }}
                             className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
                             📂 เปิด
@@ -230,6 +240,10 @@ export default function HomeScreen() {
                           <button onClick={() => { duplicateReport(report.id); setMenuOpen(null); }}
                             className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
                             📋 ทำสำเนา
+                          </button>
+                          <button onClick={() => { setPreviewReport(report); setMenuOpen(null); }}
+                            className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
+                            👁️ ดูตัวอย่าง (Preview)
                           </button>
                           <button onClick={() => handleExportPDF(report.id)}
                             className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
@@ -284,9 +298,17 @@ export default function HomeScreen() {
         </div>
       )}
 
+      {/* PDF Preview Modal */}
+      {previewReport && (
+        <PDFPreviewModal
+          report={previewReport}
+          onClose={() => setPreviewReport(null)}
+        />
+      )}
+
       {/* Close menu overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(null)} />
+        <div className="fixed inset-0 z-20" onClick={() => setMenuOpen(null)} />
       )}
     </div>
   );

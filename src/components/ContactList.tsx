@@ -80,22 +80,23 @@ export default function ContactList({ contacts, onChange }: ContactListProps) {
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">เบอร์โทร</label>
-                <div className="flex gap-2">
+                <div className="relative flex items-center">
                   <input
                     type="tel"
                     value={contact.phone}
                     onChange={(e) => updateContact(index, 'phone', e.target.value)}
                     placeholder="0XX-XXX-XXXX"
-                    className="flex-1 min-h-touch px-3 py-2 text-base border border-gray-300 rounded-lg bg-white
-                      focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className={`w-full min-h-touch py-2 text-base border border-gray-300 rounded-lg bg-white
+                      focus:ring-2 focus:ring-primary/30 focus:border-primary ${contact.phone ? 'pl-3 pr-12' : 'px-3'}`}
                   />
                   {contact.phone && (
                     <a
                       href={`tel:${contact.phone}`}
-                      className="min-w-touch min-h-touch bg-green-500 text-white rounded-lg flex items-center justify-center"
+                      className="absolute right-1.5 w-9 h-9 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-lg flex items-center justify-center transition-all shadow-sm"
+                      title="โทรออก"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                       </svg>
                     </a>
                   )}

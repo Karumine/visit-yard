@@ -2,7 +2,8 @@
 // ThaiDatePicker — พ.ศ. date picker
 // ==========================================
 import React from 'react';
-import { toInputDate, fromInputDate, gregorianToBuddhist } from '../lib/thaidate';
+import { CustomDatePicker } from './CustomDatePicker';
+import { gregorianToBuddhist } from '../lib/thaidate';
 
 interface ThaiDatePickerProps {
   label: string;
@@ -12,29 +13,15 @@ interface ThaiDatePickerProps {
 }
 
 export default function ThaiDatePicker({ label, value, onChange, required }: ThaiDatePickerProps) {
-  const inputValue = toInputDate(value);
-  const displayBE = value ? getBuddhistDisplay(value) : '';
+  const displayLabel = required ? `${label} *` : label;
 
   return (
     <div>
-      <label className="block text-sm font-bold text-gray-700 mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <div className="relative">
-        <input
-          type="date"
-          value={inputValue}
-          onChange={(e) => onChange(fromInputDate(e.target.value))}
-          required={required}
-          className="w-full min-h-touch px-4 py-3 text-base border border-gray-300 rounded-xl bg-white
-            focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-        />
-      </div>
-      {displayBE && (
-        <p className="text-xs text-primary mt-1 font-medium">
-          📅 {displayBE}
-        </p>
-      )}
+      <CustomDatePicker
+        label={displayLabel}
+        value={value}
+        onChange={onChange}
+      />
     </div>
   );
 }
