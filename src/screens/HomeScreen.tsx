@@ -83,7 +83,12 @@ export default function HomeScreen() {
       <header className="bg-gradient-to-r from-primary to-primary-400 text-white px-6 py-5 shadow-lg">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-1">
-            <img src="/logo.png" alt="Logo" className="h-10 w-auto brightness-0 invert" />
+            <img
+              src="/Logo_Agile Assets_CMYK.png"
+              alt="Agile Assets Logo"
+              className="h-10 w-auto object-contain brightness-0 invert drop-shadow-sm"
+              onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+            />
             <div>
               <h1 className="text-xl font-bold">รายงานการเข้าเยี่ยม ลูกค้า/Yard</h1>
               <p className="text-sm opacity-80">Agile Assets — Visit Report System</p>
