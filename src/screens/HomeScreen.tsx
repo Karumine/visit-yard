@@ -180,9 +180,8 @@ export default function HomeScreen() {
               return (
                 <div
                   key={report.id}
-                  className={`bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ${
-                    menuOpen === report.id ? 'relative z-30' : 'relative z-0'
-                  }`}
+                  className={`bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ${menuOpen === report.id ? 'relative z-30' : 'relative z-0'
+                    }`}
                 >
                   <div className="flex items-stretch">
                     {/* Status bar */}
