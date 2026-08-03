@@ -13,7 +13,7 @@ import PDFPreviewModal from '../components/PDFPreviewModal';
 type FilterStatus = 'all' | 'draft' | 'completed';
 
 export default function HomeScreen() {
-  const { reports, loadReports, createNewReport, openReport, deleteReport, duplicateReport } = useAppStore();
+  const { reports, loadReports, createNewReport, openReport, viewReport, deleteReport, duplicateReport } = useAppStore();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
@@ -185,7 +185,7 @@ export default function HomeScreen() {
                     <button
                       type="button"
                       onClick={async () => {
-                        await openReport(report.id);
+                        await viewReport(report.id);
                       }}
                       className="flex-1 px-5 py-4 text-left cursor-pointer"
                     >

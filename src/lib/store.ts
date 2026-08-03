@@ -6,7 +6,7 @@ import type { VisitReport } from '../types/report';
 import { createEmptyReport } from '../types/report';
 import { storageService } from './storage';
 
-type Screen = 'home' | 'wizard';
+type Screen = 'home' | 'wizard' | 'detail';
 
 interface AppState {
   // Navigation
@@ -25,6 +25,7 @@ interface AppState {
   // Report operations
   createNewReport: () => void;
   openReport: (id: string) => Promise<void>;
+  viewReport: (id: string) => Promise<void>;
   updateCurrentReport: (partial: Partial<VisitReport>) => void;
   saveCurrentReport: () => Promise<void>;
   deleteReport: (id: string) => Promise<void>;
@@ -62,6 +63,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     const report = await storageService.getReport(id);
     if (report) {
       set({ currentReport: report, currentStep: 1, screen: 'wizard' });
+    }
+  },
+
+  viewReport: async (id) => {
+    const report = await storageService.getReport(id);
+    if (report) {
+      set({ currentReport: report, screen: 'detail' });
     }
   },
 

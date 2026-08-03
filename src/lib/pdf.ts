@@ -58,8 +58,7 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
   container.style.fontFamily = "'Sarabun', 'Prompt', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
   container.style.padding = '18px 22px';
   container.style.boxSizing = 'border-box';
-  container.style.fontSize = '9.5px';
-  container.style.lineHeight = '1.3';
+  container.style.lineHeight = '1.35';
   container.style.zIndex = '-9999';
 
   container.innerHTML = `
@@ -85,29 +84,29 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
     <div style="border: 1px solid #cbd5e1; border-radius: 2px; margin-bottom: 6px; font-size: 9.5px;">
       <!-- Row 1 -->
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 15%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">ชื่อบริษัท:</div>
-        <div style="width: 35%; padding: 3px 5px; font-weight: bold; color: #0f172a; border-right: 1px solid #cbd5e1; display: flex; align-items: center; word-break: break-word;">${report.companyName || '-'}</div>
-        <div style="width: 18%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">ประเภทลูกค้า/Yard:</div>
-        <div style="width: 32%; padding: 3px 5px; display: flex; align-items: center; word-break: break-word;">
+        <div style="width: 15%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">ชื่อบริษัท:</div>
+        <div style="width: 35%; padding: 3px 6px; font-weight: bold; color: #0f172a; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start; word-break: break-word;">${report.companyName || '-'}</div>
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">ประเภทลูกค้า/Yard:</div>
+        <div style="width: 32%; padding: 3px 6px; display: flex; align-items: flex-start; word-break: break-word;">
           ${report.customerType === 'existing' ? 'ลูกค้าเดิม' : 'ลูกค้าใหม่'} / ${report.yardType === 'existing' ? 'Yard เดิม' : 'Yard ใหม่'}
         </div>
       </div>
       <!-- Row 2 -->
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 15%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">ที่อยู่:</div>
-        <div style="width: 85%; padding: 3px 5px; display: flex; align-items: center; word-break: break-word;">${report.address || '-'}</div>
+        <div style="width: 15%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">ที่อยู่:</div>
+        <div style="width: 85%; padding: 3px 6px; display: flex; align-items: flex-start; word-break: break-word;">${report.address || '-'}</div>
       </div>
       <!-- Row 3 -->
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 15%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">กลุ่มเครื่องจักร:</div>
-        <div style="width: 35%; padding: 3px 5px; border-right: 1px solid #cbd5e1; display: flex; align-items: center; word-break: break-word;">${report.assetGroupType === 'existing' ? 'เครื่องจักรกลุ่มเดิม' : 'เครื่องจักรกลุ่มใหม่'}</div>
-        <div style="width: 18%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">ประเภทเครื่องจักร:</div>
-        <div style="width: 32%; padding: 3px 5px; display: flex; align-items: center; word-break: break-word;">${report.machineType || '-'}</div>
+        <div style="width: 15%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">กลุ่มเครื่องจักร:</div>
+        <div style="width: 35%; padding: 3px 6px; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start; word-break: break-word;">${report.assetGroupType === 'existing' ? 'เครื่องจักรกลุ่มเดิม' : 'เครื่องจักรกลุ่มใหม่'}</div>
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">ประเภทเครื่องจักร:</div>
+        <div style="width: 32%; padding: 3px 6px; display: flex; align-items: flex-start; word-break: break-word;">${report.machineType || '-'}</div>
       </div>
       <!-- Row 4 -->
       <div style="display: flex; align-items: stretch;">
-        <div style="width: 15%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">ลักษณะธุรกิจ:</div>
-        <div style="width: 85%; padding: 3px 5px; display: flex; align-items: center; word-break: break-word;">${report.visitorBusinessNature || '-'}</div>
+        <div style="width: 15%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">ลักษณะธุรกิจ:</div>
+        <div style="width: 85%; padding: 3px 6px; display: flex; align-items: flex-start; word-break: break-word;">${report.visitorBusinessNature || '-'}</div>
       </div>
     </div>
 
@@ -117,25 +116,25 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
     </div>
     <div style="display: flex; gap: 8px; margin-bottom: 6px;">
       <div style="flex: 1.2; border: 1px solid #cbd5e1; border-radius: 2px; overflow: hidden;">
-        <div style="display: flex; background: #DCE9F5; color: #1B3A5F; font-weight: bold; border-bottom: 1px solid #cbd5e1; font-size: 9px;">
-          <div style="width: 40%; padding: 2px 5px; border-right: 1px solid #cbd5e1;">ชื่อผู้ติดต่อ</div>
-          <div style="width: 30%; padding: 2px 5px; border-right: 1px solid #cbd5e1;">ตำแหน่ง</div>
-          <div style="width: 30%; padding: 2px 5px;">เบอร์โทร</div>
+        <div style="display: flex; background: #DCE9F5; color: #1B3A5F; font-weight: bold; border-bottom: 1px solid #cbd5e1; font-size: 9px; align-items: center;">
+          <div style="width: 40%; padding: 3px 6px; border-right: 1px solid #cbd5e1;">ชื่อผู้ติดต่อ</div>
+          <div style="width: 30%; padding: 3px 6px; border-right: 1px solid #cbd5e1;">ตำแหน่ง</div>
+          <div style="width: 30%; padding: 3px 6px;">เบอร์โทร</div>
         </div>
         ${
           validContacts.length > 0
             ? validContacts
                 .map(
                   (c, idx) => `
-          <div style="display: flex; font-size: 9px; ${idx < validContacts.length - 1 ? 'border-bottom: 1px solid #cbd5e1;' : ''}">
-            <div style="width: 40%; padding: 2px 5px; border-right: 1px solid #cbd5e1; word-break: break-word;">${c.name}</div>
-            <div style="width: 30%; padding: 2px 5px; border-right: 1px solid #cbd5e1; word-break: break-word;">${c.position || '-'}</div>
-            <div style="width: 30%; padding: 2px 5px; word-break: break-word;">${c.phone || '-'}</div>
+          <div style="display: flex; font-size: 9px; align-items: flex-start; ${idx < validContacts.length - 1 ? 'border-bottom: 1px solid #cbd5e1;' : ''}">
+            <div style="width: 40%; padding: 3px 6px; border-right: 1px solid #cbd5e1; word-break: break-word;">${c.name}</div>
+            <div style="width: 30%; padding: 3px 6px; border-right: 1px solid #cbd5e1; word-break: break-word;">${c.position || '-'}</div>
+            <div style="width: 30%; padding: 3px 6px; word-break: break-word;">${c.phone || '-'}</div>
           </div>
         `
                 )
                 .join('')
-            : `<div style="padding: 4px 5px; text-align: center; color: #94a3b8; font-size: 9px;">- ไม่ระบุ -</div>`
+            : `<div style="padding: 4px 6px; text-align: center; color: #94a3b8; font-size: 9px;">- ไม่ระบุ -</div>`
         }
       </div>
       <div style="flex: 1; border: 1px solid #cbd5e1; padding: 4px 6px; border-radius: 2px; font-size: 9px; background: #fafafa; word-break: break-word;">
@@ -150,16 +149,16 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
     </div>
     <div style="border: 1px solid #cbd5e1; border-radius: 2px; margin-bottom: 6px; font-size: 9px;">
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 22%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">รายละเอียดการเยี่ยม:</div>
-        <div style="width: 78%; padding: 3px 5px; word-break: break-word;">${report.visitDetail || '-'}</div>
+        <div style="width: 22%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">รายละเอียดการเยี่ยม:</div>
+        <div style="width: 78%; padding: 3px 6px; word-break: break-word;">${report.visitDetail || '-'}</div>
       </div>
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 22%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">ข้อมูลเครื่องจักรขอสินเชื่อ:</div>
-        <div style="width: 78%; padding: 3px 5px; word-break: break-word;">${report.financedMachineInfo || '-'}</div>
+        <div style="width: 22%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">ข้อมูลเครื่องจักรขอสินเชื่อ:</div>
+        <div style="width: 78%; padding: 3px 6px; word-break: break-word;">${report.financedMachineInfo || '-'}</div>
       </div>
       <div style="display: flex; align-items: stretch;">
-        <div style="width: 22%; background: #f1f5f9; padding: 3px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">ข้อมูลลูกค้าเบื้องต้น:</div>
-        <div style="width: 78%; padding: 3px 5px; word-break: break-word;">${report.customerBackground || '-'}</div>
+        <div style="width: 22%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">ข้อมูลลูกค้าเบื้องต้น:</div>
+        <div style="width: 78%; padding: 3px 6px; word-break: break-word;">${report.customerBackground || '-'}</div>
       </div>
     </div>
 
@@ -190,42 +189,42 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
     <div style="border: 1px solid #cbd5e1; border-radius: 2px; margin-bottom: 6px; font-size: 9px;">
       <!-- Row 1 -->
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">1. ประสบการณ์:</div>
-        <div style="width: 32%; padding: 2.5px 5px; border-right: 1px solid #cbd5e1; word-break: break-word;">
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">1. ประสบการณ์:</div>
+        <div style="width: 32%; padding: 3px 6px; border-right: 1px solid #cbd5e1; word-break: break-word;">
           ปฏิบัติ: ${obs.experience.isOperator || '-'} | บริหาร: ${obs.experience.isExecutive || '-'}<br/>
           องค์กร: ${obs.experience.isCorporate || '-'} | ครอบครัว: ${obs.experience.isFamily || '-'}
         </div>
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">2. ทีมงาน Srv/Op:</div>
-        <div style="width: 32%; padding: 2.5px 5px; word-break: break-word;">
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">2. ทีมงาน Srv/Op:</div>
+        <div style="width: 32%; padding: 3px 6px; word-break: break-word;">
           ${obs.team.main || '-'}<br/>
           Srv: ${obs.team.srvTeam || '-'} | Op: ${obs.team.opTeam || '-'}
         </div>
       </div>
       <!-- Row 2 -->
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">3. การจัดการอะไหล่:</div>
-        <div style="width: 32%; padding: 2.5px 5px; border-right: 1px solid #cbd5e1; word-break: break-word;">${obs.spareParts || '-'}</div>
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">4. ระบบป้องกันสูญหาย:</div>
-        <div style="width: 32%; padding: 2.5px 5px; word-break: break-word;">${obs.theftPrevention || '-'}</div>
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">3. การจัดการอะไหล่:</div>
+        <div style="width: 32%; padding: 3px 6px; border-right: 1px solid #cbd5e1; word-break: break-word;">${obs.spareParts || '-'}</div>
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">4. ระบบป้องกันสูญหาย:</div>
+        <div style="width: 32%; padding: 3px 6px; word-break: break-word;">${obs.theftPrevention || '-'}</div>
       </div>
       <!-- Row 3 -->
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">5. ลักษณะลูกค้าที่มี:</div>
-        <div style="width: 32%; padding: 2.5px 5px; border-right: 1px solid #cbd5e1; word-break: break-word;">${obs.customerCharacteristics || '-'}</div>
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">6. คู่แข่ง:</div>
-        <div style="width: 32%; padding: 2.5px 5px; word-break: break-word;">${obs.competitors || '-'}</div>
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">5. ลักษณะลูกค้าที่มี:</div>
+        <div style="width: 32%; padding: 3px 6px; border-right: 1px solid #cbd5e1; word-break: break-word;">${obs.customerCharacteristics || '-'}</div>
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">6. คู่แข่ง:</div>
+        <div style="width: 32%; padding: 3px 6px; word-break: break-word;">${obs.competitors || '-'}</div>
       </div>
       <!-- Row 4 -->
       <div style="display: flex; border-bottom: 1px solid #cbd5e1; align-items: stretch;">
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">7. มูลค่าเครื่องจักร (ลบ.):</div>
-        <div style="width: 82%; padding: 2.5px 5px; word-break: break-word;">
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">7. มูลค่าเครื่องจักร (ลบ.):</div>
+        <div style="width: 82%; padding: 3px 6px; word-break: break-word;">
           สูงสุด: ${obs.machineValue.highest ?? '-'} | ต่ำสุด: ${obs.machineValue.lowest ?? '-'} | เฉลี่ย: ${obs.machineValue.average ?? '-'} | รวม: ${obs.machineValue.total ?? '-'} (${obs.machineValue.remark || 'ยอดขาย/ปี'})
         </div>
       </div>
       <!-- Row 5 -->
       <div style="display: flex; align-items: stretch;">
-        <div style="width: 18%; background: #f1f5f9; padding: 2.5px 5px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: center;">8. อื่นๆ:</div>
-        <div style="width: 82%; padding: 2.5px 5px; word-break: break-word;">${obs.others || '-'}</div>
+        <div style="width: 18%; background: #f1f5f9; padding: 3px 6px; font-weight: bold; color: #1e293b; border-right: 1px solid #cbd5e1; display: flex; align-items: flex-start;">8. อื่นๆ:</div>
+        <div style="width: 82%; padding: 3px 6px; word-break: break-word;">${obs.others || '-'}</div>
       </div>
     </div>
 
@@ -235,26 +234,26 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
     </div>
     <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
       <div style="flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
-        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5;">
-          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F;">ลักษณะธุรกิจ</div>
-          <div style="font-size: 13px; font-weight: bold; color: #0f172a;">${scores.businessNature !== null ? scores.businessNature : '-'}</div>
+        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F; margin-bottom: 1px;">ลักษณะธุรกิจ</div>
+          <div style="font-size: 13px; font-weight: bold; color: #0f172a; line-height: 1;">${scores.businessNature !== null ? scores.businessNature : '-'}</div>
         </div>
-        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5;">
-          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F;">ลักษณะเจ้าของ</div>
-          <div style="font-size: 13px; font-weight: bold; color: #0f172a;">${scores.ownerCharacter !== null ? scores.ownerCharacter : '-'}</div>
+        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F; margin-bottom: 1px;">ลักษณะเจ้าของ</div>
+          <div style="font-size: 13px; font-weight: bold; color: #0f172a; line-height: 1;">${scores.ownerCharacter !== null ? scores.ownerCharacter : '-'}</div>
         </div>
-        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5;">
-          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F;">ฐานลูกค้า</div>
-          <div style="font-size: 13px; font-weight: bold; color: #0f172a;">${scores.customerBase !== null ? scores.customerBase : '-'}</div>
+        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F; margin-bottom: 1px;">ฐานลูกค้า</div>
+          <div style="font-size: 13px; font-weight: bold; color: #0f172a; line-height: 1;">${scores.customerBase !== null ? scores.customerBase : '-'}</div>
         </div>
-        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5;">
-          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F;">ความเป็นพันธมิตร</div>
-          <div style="font-size: 13px; font-weight: bold; color: #0f172a;">${scores.partnership !== null ? scores.partnership : '-'}</div>
+        <div style="background: #DCE9F5; padding: 4px 6px; border-radius: 4px; text-align: center; border: 1px solid #bbe0f5; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #1B3A5F; margin-bottom: 1px;">ความเป็นพันธมิตร</div>
+          <div style="font-size: 13px; font-weight: bold; color: #0f172a; line-height: 1;">${scores.partnership !== null ? scores.partnership : '-'}</div>
         </div>
       </div>
-      <div style="background: #1B3A5F; color: white; padding: 4px 10px; border-radius: 6px; text-align: center; min-width: 90px;">
-        <div style="font-size: 8.5px; opacity: 0.9;">คะแนนเฉลี่ย</div>
-        <div style="font-size: 15px; font-weight: bold;">⭐ ${avg !== null ? avg.toFixed(1) : '-'}/10</div>
+      <div style="background: #1B3A5F; color: white; padding: 5px 10px; border-radius: 6px; text-align: center; min-width: 90px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div style="font-size: 8.5px; opacity: 0.9; margin-bottom: 1px;">คะแนนเฉลี่ย</div>
+        <div style="font-size: 15px; font-weight: bold; line-height: 1;">⭐ ${avg !== null ? avg.toFixed(1) : '-'}/10</div>
       </div>
     </div>
 
@@ -267,12 +266,12 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
         <div><strong>การดำเนินการถัดไป (Next Action):</strong> ${report.nextAction || '-'}</div>
         ${report.nextAppointment ? `<div style="margin-top: 2px;"><strong>วันนัดหมายครั้งถัดไป:</strong> ${toThaiDateFull(report.nextAppointment)}</div>` : ''}
       </div>
-      <div style="flex: 1; border: 1px solid #cbd5e1; padding: 4px 6px; border-radius: 2px; text-align: center; background: #fff;">
+      <div style="flex: 1; border: 1px solid #cbd5e1; padding: 4px 6px; border-radius: 2px; text-align: center; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F;">ผู้เข้าเยี่ยม/รายงาน (AA)</div>
         ${
           report.inspectorSignature
-            ? `<img src="${report.inspectorSignature}" style="height: 28px; max-width: 100%; object-fit: contain; margin: 2px 0;" />`
-            : '<div style="height: 28px;"></div>'
+            ? `<img src="${report.inspectorSignature}" style="height: 26px; max-width: 100%; object-fit: contain; margin: 2px auto;" />`
+            : '<div style="height: 26px;"></div>'
         }
         <div style="font-size: 9px; color: #334155; border-top: 1px dashed #cbd5e1; padding-top: 2px; word-break: break-word;">
           ${report.inspectorName || '(................................................)'}
@@ -285,35 +284,35 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
       7. ช่องเซ็นอนุมัติ (Inspected by)
     </div>
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-      <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 6px; text-align: center; background: #fff;">
+      <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 6px; text-align: center; background: #fff;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F; margin-bottom: 2px;">Engineering Department</div>
         ${
           approvals.engineering?.signature
-            ? `<img src="${approvals.engineering.signature}" style="height: 26px; max-width: 100%; object-fit: contain;" />`
-            : '<div style="height: 26px;"></div>'
+            ? `<img src="${approvals.engineering.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
+            : '<div style="height: 24px;"></div>'
         }
-        <div style="font-size: 8.5px; color: #475569; margin-top: 2px;">ชื่อ: ${approvals.engineering?.name || '.....................................'}</div>
-        <div style="font-size: 8.5px; color: #475569;">วันที่: ..... / ..... / ..........</div>
+        <div style="font-size: 8.5px; color: #475569; margin-top: 2px; line-height: 1.3;">ชื่อ: ${approvals.engineering?.name || '.....................................'}</div>
+        <div style="font-size: 8.5px; color: #475569; margin-top: 1px; line-height: 1.3;">วันที่: ..... / ..... / ..........</div>
       </div>
-      <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 6px; text-align: center; background: #fff;">
+      <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 6px; text-align: center; background: #fff;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F; margin-bottom: 2px;">Credit Department</div>
         ${
           approvals.credit?.signature
-            ? `<img src="${approvals.credit.signature}" style="height: 26px; max-width: 100%; object-fit: contain;" />`
-            : '<div style="height: 26px;"></div>'
+            ? `<img src="${approvals.credit.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
+            : '<div style="height: 24px;"></div>'
         }
-        <div style="font-size: 8.5px; color: #475569; margin-top: 2px;">ชื่อ: ${approvals.credit?.name || '.....................................'}</div>
-        <div style="font-size: 8.5px; color: #475569;">วันที่: ..... / ..... / ..........</div>
+        <div style="font-size: 8.5px; color: #475569; margin-top: 2px; line-height: 1.3;">ชื่อ: ${approvals.credit?.name || '.....................................'}</div>
+        <div style="font-size: 8.5px; color: #475569; margin-top: 1px; line-height: 1.3;">วันที่: ..... / ..... / ..........</div>
       </div>
-      <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 6px; text-align: center; background: #fff;">
+      <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 6px; text-align: center; background: #fff;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F; margin-bottom: 2px;">General Manager</div>
         ${
           approvals.generalManager?.signature
-            ? `<img src="${approvals.generalManager.signature}" style="height: 26px; max-width: 100%; object-fit: contain;" />`
-            : '<div style="height: 26px;"></div>'
+            ? `<img src="${approvals.generalManager.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
+            : '<div style="height: 24px;"></div>'
         }
-        <div style="font-size: 8.5px; color: #475569; margin-top: 2px;">ชื่อ: ${approvals.generalManager?.name || '.....................................'}</div>
-        <div style="font-size: 8.5px; color: #475569;">วันที่: ..... / ..... / ..........</div>
+        <div style="font-size: 8.5px; color: #475569; margin-top: 2px; line-height: 1.3;">ชื่อ: ${approvals.generalManager?.name || '.....................................'}</div>
+        <div style="font-size: 8.5px; color: #475569; margin-top: 1px; line-height: 1.3;">วันที่: ..... / ..... / ..........</div>
       </div>
     </div>
   `;
