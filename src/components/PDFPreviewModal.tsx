@@ -3,7 +3,7 @@
 // ==========================================
 import React, { useEffect, useState } from 'react';
 import type { VisitReport } from '../types/report';
-import { generatePDFCanvas, generatePDF } from '../lib/pdf';
+import { generatePDFCanvas } from '../lib/pdf';
 
 interface PDFPreviewModalProps {
   report: VisitReport | null;
@@ -13,7 +13,6 @@ interface PDFPreviewModalProps {
 export default function PDFPreviewModal({ report, onClose }: PDFPreviewModalProps) {
   const [loading, setLoading] = useState(true);
   const [imgDataUrl, setImgDataUrl] = useState<string | null>(null);
-  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -43,17 +42,6 @@ export default function PDFPreviewModal({ report, onClose }: PDFPreviewModalProp
 
   if (!report) return null;
 
-  const handleDownload = async () => {
-    setDownloading(true);
-    try {
-      await generatePDF(report);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setDownloading(false);
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex flex-col items-center justify-between p-2 sm:p-4 backdrop-blur-sm">
       {/* Top Header */}
@@ -68,14 +56,6 @@ export default function PDFPreviewModal({ report, onClose }: PDFPreviewModalProp
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleDownload}
-            disabled={loading || downloading}
-            className="min-h-touch px-4 py-2 bg-primary hover:bg-primary-400 disabled:opacity-50 text-white rounded-lg font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow"
-          >
-            <span>📥</span>
-            <span>{downloading ? 'กำลังออก PDF...' : 'ดาวน์โหลด PDF'}</span>
-          </button>
           <button
             onClick={onClose}
             className="min-h-touch min-w-touch p-2 text-gray-400 hover:text-white rounded-lg font-bold text-base flex items-center justify-center transition-colors"

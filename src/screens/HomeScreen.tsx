@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { useAppStore } from '../lib/store';
 import { calculateAverageScore, VisitReport } from '../types/report';
 import { toThaiDateFull } from '../lib/thaidate';
-import { generatePDF } from '../lib/pdf';
 import { exportReportAsJSON, importReportFromJSON } from '../lib/storage';
 import { loadSampleData } from '../data/sampleData';
 import PDFPreviewModal from '../components/PDFPreviewModal';
@@ -29,14 +28,6 @@ export default function HomeScreen() {
     if (search && !r.companyName.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
-
-  const handleExportPDF = async (id: string) => {
-    const report = reports.find(r => r.id === id);
-    if (report) {
-      await generatePDF(report);
-    }
-    setMenuOpen(null);
-  };
 
   const handleExportJSON = async (id: string) => {
     const report = reports.find(r => r.id === id);
@@ -250,10 +241,6 @@ export default function HomeScreen() {
                           <button onClick={() => { setPreviewReport(report); setMenuOpen(null); }}
                             className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
                             👁️ ดูตัวอย่าง (Preview)
-                          </button>
-                          <button onClick={() => handleExportPDF(report.id)}
-                            className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
-                            📄 ออก PDF
                           </button>
                           <button onClick={() => handleExportJSON(report.id)}
                             className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2">

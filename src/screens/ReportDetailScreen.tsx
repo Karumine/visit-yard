@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { useAppStore } from '../lib/store';
 import { toThaiDateFull } from '../lib/thaidate';
 import { calculateAverageScore } from '../types/report';
-import { generatePDF } from '../lib/pdf';
 
 /** Convert Blob to Data URL */
 function photoToDataUrl(blob: Blob): Promise<string> {
@@ -79,17 +78,6 @@ export default function ReportDetailScreen() {
   const scores = report.scores;
   const avg = calculateAverageScore(scores);
   const approvals = report.approvals || {} as typeof report.approvals;
-
-  const handleDownload = async () => {
-    setDownloading(true);
-    try {
-      await generatePDF(report);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setDownloading(false);
-    }
-  };
 
   const handlePrint = () => {
     window.print();
@@ -166,14 +154,6 @@ export default function ReportDetailScreen() {
               title="พิมพ์เอกสาร หรือเลือก Save as PDF ได้ตัวหนังสือตรงคมชัด 100%"
             >
               🖨️ <span>พิมพ์ / เซฟ PDF</span>
-            </button>
-            <button
-              onClick={handleDownload}
-              disabled={downloading}
-              className="min-h-[44px] px-3 py-2 bg-white/10 hover:bg-white/20 text-white disabled:opacity-50 rounded-lg font-medium text-xs sm:text-sm flex items-center gap-1 transition-colors"
-              title="ดาวน์โหลดไฟล์ PDF โดยตรง"
-            >
-              📥 <span>{downloading ? 'กำลังสร้าง...' : 'PDF รูปภาพ'}</span>
             </button>
           </div>
         </div>

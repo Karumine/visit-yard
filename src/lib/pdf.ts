@@ -1,10 +1,9 @@
 // ==========================================
 // PDF Export — html2canvas + jsPDF (1-Page A4 Thai PDF)
 // ==========================================
-import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import type { VisitReport } from '../types/report';
-import { toThaiDateShort, toThaiDateFull } from './thaidate';
+import { toThaiDateFull } from './thaidate';
 import { calculateAverageScore } from '../types/report';
 
 /** Convert Blob to Data URL */
@@ -121,21 +120,20 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
           <div style="width: 30%; padding: 3px 6px; border-right: 1px solid #cbd5e1;">ตำแหน่ง</div>
           <div style="width: 30%; padding: 3px 6px;">เบอร์โทร</div>
         </div>
-        ${
-          validContacts.length > 0
-            ? validContacts
-                .map(
-                  (c, idx) => `
+        ${validContacts.length > 0
+      ? validContacts
+        .map(
+          (c, idx) => `
           <div style="display: flex; font-size: 9px; align-items: flex-start; ${idx < validContacts.length - 1 ? 'border-bottom: 1px solid #cbd5e1;' : ''}">
             <div style="width: 40%; padding: 3px 6px; border-right: 1px solid #cbd5e1; word-break: break-word;">${c.name}</div>
             <div style="width: 30%; padding: 3px 6px; border-right: 1px solid #cbd5e1; word-break: break-word;">${c.position || '-'}</div>
             <div style="width: 30%; padding: 3px 6px; word-break: break-word;">${c.phone || '-'}</div>
           </div>
         `
-                )
-                .join('')
-            : `<div style="padding: 4px 6px; text-align: center; color: #94a3b8; font-size: 9px;">- ไม่ระบุ -</div>`
-        }
+        )
+        .join('')
+      : `<div style="padding: 4px 6px; text-align: center; color: #94a3b8; font-size: 9px;">- ไม่ระบุ -</div>`
+    }
       </div>
       <div style="flex: 1; border: 1px solid #cbd5e1; padding: 4px 6px; border-radius: 2px; font-size: 9px; background: #fafafa; word-break: break-word;">
         <div style="font-weight: bold; color: #1B3A5F; margin-bottom: 2px;">วัตถุประสงค์ในการเยี่ยม:</div>
@@ -162,9 +160,8 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
       </div>
     </div>
 
-    ${
-      allPhotoItems.length > 0
-        ? `
+    ${allPhotoItems.length > 0
+      ? `
     <div style="display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
       ${allPhotoItems
         .slice(0, 6)
@@ -179,7 +176,7 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
         .join('')}
     </div>
     `
-        : ''
+      : ''
     }
 
     <!-- SECTION 4: ข้อสังเกต -->
@@ -268,11 +265,10 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
       </div>
       <div style="flex: 1; border: 1px solid #cbd5e1; padding: 4px 6px; border-radius: 2px; text-align: center; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F;">ผู้เข้าเยี่ยม/รายงาน (AA)</div>
-        ${
-          report.inspectorSignature
-            ? `<img src="${report.inspectorSignature}" style="height: 26px; max-width: 100%; object-fit: contain; margin: 2px auto;" />`
-            : '<div style="height: 26px;"></div>'
-        }
+        ${report.inspectorSignature
+      ? `<img src="${report.inspectorSignature}" style="height: 26px; max-width: 100%; object-fit: contain; margin: 2px auto;" />`
+      : '<div style="height: 26px;"></div>'
+    }
         <div style="font-size: 9px; color: #334155; border-top: 1px dashed #cbd5e1; padding-top: 2px; word-break: break-word;">
           ${report.inspectorName || '(................................................)'}
         </div>
@@ -286,31 +282,28 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
       <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 6px; text-align: center; background: #fff;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F; margin-bottom: 2px;">Engineering Department</div>
-        ${
-          approvals.engineering?.signature
-            ? `<img src="${approvals.engineering.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
-            : '<div style="height: 24px;"></div>'
-        }
+        ${approvals.engineering?.signature
+      ? `<img src="${approvals.engineering.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
+      : '<div style="height: 24px;"></div>'
+    }
         <div style="font-size: 8.5px; color: #475569; margin-top: 2px; line-height: 1.3;">ชื่อ: ${approvals.engineering?.name || '.....................................'}</div>
         <div style="font-size: 8.5px; color: #475569; margin-top: 1px; line-height: 1.3;">วันที่: ..... / ..... / ..........</div>
       </div>
       <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 6px; text-align: center; background: #fff;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F; margin-bottom: 2px;">Credit Department</div>
-        ${
-          approvals.credit?.signature
-            ? `<img src="${approvals.credit.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
-            : '<div style="height: 24px;"></div>'
-        }
+        ${approvals.credit?.signature
+      ? `<img src="${approvals.credit.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
+      : '<div style="height: 24px;"></div>'
+    }
         <div style="font-size: 8.5px; color: #475569; margin-top: 2px; line-height: 1.3;">ชื่อ: ${approvals.credit?.name || '.....................................'}</div>
         <div style="font-size: 8.5px; color: #475569; margin-top: 1px; line-height: 1.3;">วันที่: ..... / ..... / ..........</div>
       </div>
       <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 6px; text-align: center; background: #fff;">
         <div style="font-weight: bold; font-size: 9px; color: #1B3A5F; margin-bottom: 2px;">General Manager</div>
-        ${
-          approvals.generalManager?.signature
-            ? `<img src="${approvals.generalManager.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
-            : '<div style="height: 24px;"></div>'
-        }
+        ${approvals.generalManager?.signature
+      ? `<img src="${approvals.generalManager.signature}" style="height: 24px; max-width: 100%; object-fit: contain;" />`
+      : '<div style="height: 24px;"></div>'
+    }
         <div style="font-size: 8.5px; color: #475569; margin-top: 2px; line-height: 1.3;">ชื่อ: ${approvals.generalManager?.name || '.....................................'}</div>
         <div style="font-size: 8.5px; color: #475569; margin-top: 1px; line-height: 1.3;">วันที่: ..... / ..... / ..........</div>
       </div>
@@ -351,34 +344,4 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
       document.body.removeChild(container);
     }
   }
-}
-
-/** Generate and save PDF file */
-export async function generatePDF(report: VisitReport): Promise<void> {
-  const canvas = await generatePDFCanvas(report);
-  const doc = new jsPDF('p', 'mm', 'a4');
-  const imgData = canvas.toDataURL('image/jpeg', 0.95);
-  doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-
-  const fileName = `รายงานเข้าเยี่ยม_${report.companyName || 'draft'}_${toThaiDateShort(report.visitDate)}.pdf`;
-
-  // Try Web Share API (iPad)
-  const pdfBlob = doc.output('blob');
-  if (navigator.share && navigator.canShare) {
-    try {
-      const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: 'Visit Report',
-          files: [file],
-        });
-        return;
-      }
-    } catch (e) {
-      // Fallback to direct download
-    }
-  }
-
-  // Fallback: direct download
-  doc.save(fileName);
 }
