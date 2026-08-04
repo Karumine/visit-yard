@@ -55,8 +55,8 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-bold text-gray-700">{label}</label>
-        <span className="text-xs text-gray-400">
+        <label className="block text-sm font-bold text-slate-300">{label}</label>
+        <span className="text-xs text-slate-500">
           {photos.length} รูป • {calculateTotalSize(photos)}
         </span>
       </div>
@@ -67,7 +67,7 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
           {photos.map((photo, index) => (
             <div key={photo.id} className="relative group">
               <div
-                className="aspect-square rounded-xl overflow-hidden bg-gray-100 cursor-pointer border-2 border-transparent hover:border-primary transition-colors"
+                className="aspect-square rounded-xl overflow-hidden bg-slate-100 cursor-pointer border-2 border-slate-200 hover:border-blue-500 transition-colors"
                 onClick={() => setViewingPhoto(photo)}
               >
                 <img
@@ -82,14 +82,14 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); movePhoto(index, index - 1); }}
-                    className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center shadow text-xs"
+                    className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center shadow text-xs text-slate-700"
                   >←</button>
                 )}
                 {index < photos.length - 1 && (
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); movePhoto(index, index + 1); }}
-                    className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center shadow text-xs"
+                    className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center shadow text-xs text-slate-700"
                   >→</button>
                 )}
                 <button
@@ -98,14 +98,6 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
                   className="w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow text-xs font-bold"
                 >✕</button>
               </div>
-              {/* Caption */}
-              <input
-                type="text"
-                placeholder="คำบรรยาย..."
-                value={photo.caption || ''}
-                onChange={(e) => updateCaption(photo.id, e.target.value)}
-                className="mt-1 w-full text-xs px-2 py-1 border border-gray-200 rounded-lg bg-white focus:ring-1 focus:ring-primary focus:border-primary"
-              />
             </div>
           ))}
         </div>
@@ -122,8 +114,8 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
             }
           }}
           disabled={isProcessing}
-          className="flex-1 min-h-touch px-4 py-3 bg-primary text-white rounded-xl font-medium text-base
-            flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-50"
+          className="flex-1 min-h-touch px-4 py-3 bg-blue-600 text-white rounded-xl font-medium text-base
+            flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-50 hover:bg-blue-700 shadow-xs"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -140,10 +132,10 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
             }
           }}
           disabled={isProcessing}
-          className="flex-1 min-h-touch px-4 py-3 bg-accent text-primary rounded-xl font-medium text-base
-            flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-50"
+          className="flex-1 min-h-touch px-4 py-3 bg-white text-blue-600 rounded-xl font-semibold text-base border border-slate-200
+            flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-50 hover:bg-slate-50 shadow-xs"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           เลือกจากอัลบั้ม

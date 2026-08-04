@@ -46,7 +46,7 @@ export default function CurrencyInput({ label, value, onChange, placeholder = '0
 
   return (
     <div>
-      <label className="block text-sm font-bold text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-bold text-slate-700 mb-1">{label}</label>
       <div className="relative">
         <input
           type="text"
@@ -55,10 +55,10 @@ export default function CurrencyInput({ label, value, onChange, placeholder = '0
           onChange={handleChange}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className="w-full min-h-touch px-4 py-3 pr-20 text-base border border-gray-300 rounded-xl bg-white
-            focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+          className="w-full min-h-touch px-4 py-3 pr-20 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400
+            focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors shadow-xs"
         />
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">
           ล้านบาท
         </span>
       </div>

@@ -21,12 +21,12 @@ export default function Step5Scores({ report, onChange }: Props) {
 
   return (
     <div className="space-y-2">
-      <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+      <h2 className="text-xl font-bold text-blue-600 flex items-center gap-2">
         ⭐ ความเห็น/ความน่าสนใจ
       </h2>
-      <p className="text-sm text-gray-500 mb-4">ให้คะแนน 0–10 ในแต่ละหัวข้อ</p>
+      <p className="text-sm text-slate-500 mb-4">ให้คะแนน 0–10 ในแต่ละหัวข้อ</p>
 
-      <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-6">
         <ScoreSlider
           label="1. ลักษณะธุรกิจ"
           value={scores.businessNature}
@@ -50,12 +50,12 @@ export default function Step5Scores({ report, onChange }: Props) {
       </div>
 
       {/* Average Score Card */}
-      <div className="mt-6 bg-gradient-to-r from-primary to-primary-400 rounded-2xl p-6 text-white text-center shadow-lg">
-        <p className="text-sm font-medium opacity-90 mb-1">คะแนนเฉลี่ยรวม</p>
-        <p className="text-5xl font-black">
+      <div className="mt-6 bg-blue-600 rounded-2xl p-6 text-white text-center shadow-md">
+        <p className="text-sm font-bold text-white mb-1">คะแนนเฉลี่ยรวม</p>
+        <p className="text-5xl font-black text-white">
           {avg !== null ? avg.toFixed(1) : '–'}
         </p>
-        <p className="text-xs opacity-75 mt-1">จาก 10 คะแนน</p>
+        <p className="text-xs font-semibold text-blue-100 mt-1">จาก 10 คะแนน</p>
       </div>
     </div>
   );

@@ -29,12 +29,12 @@ export default function ContactList({ contacts, onChange }: ContactListProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-bold text-gray-700">ผู้ที่ได้เข้าพบ (ลูกค้า/Yard)</label>
+        <label className="block text-sm font-bold text-slate-700">ผู้ที่ได้เข้าพบ (ลูกค้า/Yard)</label>
         <button
           type="button"
           onClick={addContact}
-          className="min-h-touch px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium
-            flex items-center gap-1 active:scale-95 transition-transform"
+          className="min-h-touch px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium
+            flex items-center gap-1 active:scale-95 transition-transform hover:bg-blue-700 shadow-xs"
         >
           <span className="text-lg">+</span> เพิ่มผู้ติดต่อ
         </button>
@@ -42,14 +42,14 @@ export default function ContactList({ contacts, onChange }: ContactListProps) {
 
       <div className="space-y-3">
         {contacts.map((contact, index) => (
-          <div key={index} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+          <div key={index} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-bold text-primary">ผู้ติดต่อ #{index + 1}</span>
+              <span className="text-sm font-bold text-blue-600">ผู้ติดต่อ #{index + 1}</span>
               {contacts.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeContact(index)}
-                  className="min-w-touch min-h-[36px] px-3 bg-red-50 text-red-500 rounded-lg text-sm font-medium"
+                  className="min-w-touch min-h-[36px] px-3 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-200 hover:bg-red-100"
                 >
                   ลบ
                 </button>
@@ -57,42 +57,42 @@ export default function ContactList({ contacts, onChange }: ContactListProps) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">ชื่อ-สกุล</label>
+                <label className="text-xs text-slate-600 mb-1 block">ชื่อ-สกุล</label>
                 <input
                   type="text"
                   value={contact.name}
                   onChange={(e) => updateContact(index, 'name', e.target.value)}
                   placeholder="ชื่อผู้ติดต่อ"
-                  className="w-full min-h-touch px-3 py-2 text-base border border-gray-300 rounded-lg bg-white
-                    focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  className="w-full min-h-touch px-3 py-2 text-base border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400
+                    focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">ตำแหน่ง</label>
+                <label className="text-xs text-slate-600 mb-1 block">ตำแหน่ง</label>
                 <input
                   type="text"
                   value={contact.position}
                   onChange={(e) => updateContact(index, 'position', e.target.value)}
                   placeholder="ตำแหน่ง"
-                  className="w-full min-h-touch px-3 py-2 text-base border border-gray-300 rounded-lg bg-white
-                    focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  className="w-full min-h-touch px-3 py-2 text-base border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400
+                    focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">เบอร์โทร</label>
+                <label className="text-xs text-slate-600 mb-1 block">เบอร์โทร</label>
                 <div className="relative flex items-center">
                   <input
                     type="tel"
                     value={contact.phone}
                     onChange={(e) => updateContact(index, 'phone', e.target.value)}
                     placeholder="0XX-XXX-XXXX"
-                    className={`w-full min-h-touch py-2 text-base border border-gray-300 rounded-lg bg-white
-                      focus:ring-2 focus:ring-primary/30 focus:border-primary ${contact.phone ? 'pl-3 pr-12' : 'px-3'}`}
+                    className={`w-full min-h-touch py-2 text-base border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400
+                      focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 ${contact.phone ? 'pl-3 pr-12' : 'px-3'}`}
                   />
                   {contact.phone && (
                     <a
                       href={`tel:${contact.phone}`}
-                      className="absolute right-1.5 w-9 h-9 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-lg flex items-center justify-center transition-all shadow-sm"
+                      className="absolute right-1.5 w-9 h-9 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg flex items-center justify-center transition-all shadow-xs"
                       title="โทรออก"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">

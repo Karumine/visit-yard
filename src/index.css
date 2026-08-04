@@ -99,6 +99,23 @@ button, a, [role="button"] {
   animation: slideUp 0.4s ease-out;
 }
 
+/* Stepper Active Pulse Animation */
+@keyframes stepPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6), 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0), 0 4px 6px -1px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0), 0 4px 6px -1px rgba(37, 99, 235, 0);
+  }
+}
+
+.animate-step-active {
+  animation: stepPulse 2s infinite ease-in-out;
+}
+
 /* Touch-friendly minimum sizes */
 @layer utilities {
   .min-h-touch {

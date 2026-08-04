@@ -18,7 +18,7 @@ function RadioGroup({ label, value, onChange, options }: {
 }) {
   return (
     <div>
-      <label className="block text-sm font-bold text-gray-700 mb-2">{label}</label>
+      <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>
       <div className="flex gap-3">
         {options.map(opt => (
           <button
@@ -28,8 +28,8 @@ function RadioGroup({ label, value, onChange, options }: {
             className={`
               flex-1 min-h-touch px-4 py-3 rounded-xl text-base font-medium transition-all
               ${value === opt.value
-                ? 'bg-primary text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 active:bg-gray-200'
+                ? 'bg-blue-600 text-white shadow-xs font-semibold'
+                : 'bg-white text-slate-700 active:bg-slate-100 border border-slate-200'
               }
             `}
           >
@@ -44,7 +44,7 @@ function RadioGroup({ label, value, onChange, options }: {
 export default function Step1General({ report, onChange }: Props) {
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+      <h2 className="text-xl font-bold text-blue-600 flex items-center gap-2">
         📋 ข้อมูลทั่วไป
       </h2>
 
@@ -56,7 +56,7 @@ export default function Step1General({ report, onChange }: Props) {
           required
         />
         <div>
-          <label className="block text-sm font-bold text-gray-700 mb-1">
+          <label className="block text-sm font-bold text-slate-700 mb-1">
             ครั้งที่เข้าเยี่ยม
           </label>
           <input
@@ -65,8 +65,8 @@ export default function Step1General({ report, onChange }: Props) {
             min={1}
             value={report.visitNo}
             onChange={(e) => onChange({ visitNo: parseInt(e.target.value) || 1 })}
-            className="w-full min-h-touch px-4 py-3 text-base border border-gray-300 rounded-xl bg-white
-              focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            className="w-full min-h-touch px-4 py-3 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400
+              focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs"
           />
         </div>
       </div>
@@ -93,7 +93,7 @@ export default function Step1General({ report, onChange }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 mb-1">
+        <label className="block text-sm font-bold text-slate-700 mb-1">
           ชื่อบริษัทที่เข้าเยี่ยม <span className="text-red-500">*</span>
         </label>
         <input
@@ -101,20 +101,20 @@ export default function Step1General({ report, onChange }: Props) {
           value={report.companyName}
           onChange={(e) => onChange({ companyName: e.target.value })}
           placeholder="ชื่อบริษัท (รองรับหลายชื่อคั่น /)"
-          className="w-full min-h-touch px-4 py-3 text-base border border-gray-300 rounded-xl bg-white
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className="w-full min-h-touch px-4 py-3 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400
+            focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 mb-1">ที่อยู่</label>
+        <label className="block text-sm font-bold text-slate-700 mb-1">ที่อยู่</label>
         <textarea
           value={report.address}
           onChange={(e) => onChange({ address: e.target.value })}
           placeholder="ที่อยู่บริษัท"
           rows={3}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl bg-white resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className="w-full px-4 py-3 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400 resize-y
+            focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs"
         />
       </div>
 
@@ -129,26 +129,26 @@ export default function Step1General({ report, onChange }: Props) {
       />
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 mb-1">ประเภทเครื่องจักร</label>
+        <label className="block text-sm font-bold text-slate-700 mb-1">ประเภทเครื่องจักร</label>
         <textarea
           value={report.machineType}
           onChange={(e) => onChange({ machineType: e.target.value })}
           placeholder="ระบุประเภทเครื่องจักร"
           rows={2}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl bg-white resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className="w-full px-4 py-3 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400 resize-y
+            focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 mb-1">ลักษณะธุรกิจผู้เข้าเยี่ยม</label>
+        <label className="block text-sm font-bold text-slate-700 mb-1">ลักษณะธุรกิจผู้เข้าเยี่ยม</label>
         <textarea
           value={report.visitorBusinessNature}
           onChange={(e) => onChange({ visitorBusinessNature: e.target.value })}
           placeholder="ระบุลักษณะธุรกิจ"
           rows={2}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl bg-white resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className="w-full px-4 py-3 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400 resize-y
+            focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs"
         />
       </div>
     </div>

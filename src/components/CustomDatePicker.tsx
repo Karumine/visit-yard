@@ -206,7 +206,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
               ? 'bg-blue-600 text-white shadow-md transform scale-110' 
               : isToday 
                 ? 'bg-blue-50 text-blue-600 border border-blue-200' 
-                : 'text-slate-700 hover:bg-slate-100'
+                : 'text-slate-300 hover:bg-slate-700'
             }`}
         >
           {d}
@@ -237,7 +237,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
                   ? 'bg-blue-600 text-white font-bold shadow-md' 
                   : isCurrentMonth
                     ? 'bg-blue-50 text-blue-600 border border-blue-200 font-medium'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    : 'text-slate-300 hover:bg-slate-700'
               }`}
             >
               {monthsShort[idx]}
@@ -272,7 +272,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
                 ? 'bg-blue-600 text-white font-bold shadow-md' 
                 : y === thisYear
                   ? 'bg-blue-50 text-blue-600 border border-blue-200 font-medium'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  : 'text-slate-300 hover:bg-slate-700'
             }`}
           >
             {y + 543}
@@ -284,16 +284,16 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
 
   return (
     <div className="relative w-full" ref={containerRef}>
-      {label && <label className="block text-sm font-bold text-gray-700 mb-1">{label}</label>}
+      {label && <label className="block text-sm font-bold text-slate-700 mb-1">{label}</label>}
       <button
         type="button"
         onClick={() => { if (!readOnly) { setIsOpen(!isOpen); setViewMode('day'); } }}
-        className={`w-full min-h-touch px-4 py-3 text-base flex items-center justify-between bg-white border rounded-xl shadow-sm transition-all text-left ${readOnly ? 'bg-gray-50 cursor-not-allowed opacity-75 border-gray-200' : isOpen ? 'border-primary ring-2 ring-primary/30' : 'border-gray-300 hover:border-gray-400'}`}
+        className={`w-full min-h-touch px-4 py-3 text-base flex items-center justify-between bg-white border rounded-xl shadow-xs transition-all text-left ${readOnly ? 'bg-slate-100 cursor-not-allowed opacity-75 border-slate-200' : isOpen ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-slate-200 hover:border-slate-300'}`}
       >
-        <span className={`truncate ${!value ? 'text-gray-400' : 'text-gray-800 font-medium'}`}>
+        <span className={`truncate ${!value ? 'text-slate-400' : 'text-slate-900 font-medium'}`}>
           {value ? formatThaiDate(value) : 'เลือกวันที่...'}
         </span>
-        <CalendarIcon size={18} className={isOpen ? 'text-primary' : 'text-gray-400'} />
+        <CalendarIcon size={18} className={isOpen ? 'text-blue-600' : 'text-slate-400'} />
       </button>
 
       {isOpen && (
@@ -306,7 +306,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
             <button
               type="button"
               onClick={handlePrev}
-              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition-colors"
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
             >
               <ChevronLeftIcon size={18} />
             </button>
@@ -314,7 +314,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
             <button
               type="button"
               onClick={handleHeaderClick}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg hover:bg-blue-50 text-slate-800 font-bold transition-colors ${viewMode === 'year' ? 'cursor-default hover:bg-transparent' : ''}`}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg hover:bg-slate-100 text-slate-900 font-bold transition-colors ${viewMode === 'year' ? 'cursor-default hover:bg-transparent' : ''}`}
             >
               <span className="text-sm">
                 {getHeaderLabel()}
@@ -324,7 +324,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
             <button
               type="button"
               onClick={handleNext}
-              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition-colors"
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
             >
               <ChevronRightIcon size={18} />
             </button>
@@ -336,7 +336,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
               {/* Weekdays */}
               <div className="grid grid-cols-7 mb-2">
                 {weekdays.map(day => (
-                  <div key={day} className="text-[11px] font-bold text-slate-400 text-center uppercase tracking-tighter">
+                  <div key={day} className="text-[11px] font-bold text-slate-500 text-center uppercase tracking-tighter">
                     {day}
                   </div>
                 ))}
@@ -353,11 +353,11 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
           {viewMode === 'year' && renderYearPicker()}
 
           {/* Footer */}
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
             <button
               type="button"
               onClick={handleToday}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold hover:bg-blue-100 transition-colors"
             >
               <RotateCcwIcon size={12} />
               วันนี้
@@ -365,7 +365,7 @@ export const CustomDatePicker = ({ value, onChange, label, readOnly = false }: C
             <button
               type="button"
               onClick={() => { setIsOpen(false); setViewMode('day'); }}
-              className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors px-2 py-1"
+              className="text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors px-2 py-1"
             >
               ปิด
             </button>

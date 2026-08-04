@@ -26,15 +26,13 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
   const machinePhotoUrls = await Promise.all(
     (report.machinePhotos || []).map(async (p) => ({
       url: await photoToDataUrl(p.blob),
-      label: 'เครื่องจักร',
-      caption: p.caption,
+      label: 'รูปภาพ',
     }))
   );
   const sitePhotoUrls = await Promise.all(
     (report.sitePhotos || []).map(async (p) => ({
       url: await photoToDataUrl(p.blob),
-      label: 'สถานที่/Yard',
-      caption: p.caption,
+      label: 'รูปภาพ',
     }))
   );
   const allPhotoItems = [...machinePhotoUrls, ...sitePhotoUrls].filter((p) => p.url);
@@ -168,8 +166,7 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
         .map(
           (p) => `
         <div style="border: 1px solid #e2e8f0; border-radius: 4px; padding: 2px; text-align: center; background: #fff; width: 115px;">
-          <img src="${p.url}" style="width: 111px; height: 55px; object-fit: cover; border-radius: 2px;" />
-          <div style="font-size: 8px; color: #475569; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.label}${p.caption ? ': ' + p.caption : ''}</div>
+          <img src="${p.url}" style="width: 111px; height: 58px; object-fit: cover; border-radius: 2px;" />
         </div>
       `
         )
@@ -248,9 +245,9 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
           <div style="font-size: 13px; font-weight: bold; color: #0f172a; line-height: 1;">${scores.partnership !== null ? scores.partnership : '-'}</div>
         </div>
       </div>
-      <div style="background: #1B3A5F; color: white; padding: 5px 10px; border-radius: 6px; text-align: center; min-width: 90px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <div style="font-size: 8.5px; opacity: 0.9; margin-bottom: 1px;">คะแนนเฉลี่ย</div>
-        <div style="font-size: 15px; font-weight: bold; line-height: 1;">⭐ ${avg !== null ? avg.toFixed(1) : '-'}/10</div>
+      <div style="background: #DCE9F5; border: 2px solid #1B3A5F; color: #1B3A5F; padding: 5px 10px; border-radius: 6px; text-align: center; min-width: 90px; display: flex; flex-direction: column; justify-content: center; align-items: center; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+        <div style="font-size: 9.5px; font-weight: bold; color: #1B3A5F; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px;">คะแนนเฉลี่ย</div>
+        <div style="font-size: 15px; font-weight: bold; line-height: 1; color: #1B3A5F;"><span style="color: #f59e0b;">⭐</span> ${avg !== null ? avg.toFixed(1) : '-'}<span style="font-size: 11px; font-weight: bold; color: #1B3A5F;">/10</span></div>
       </div>
     </div>
 

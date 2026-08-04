@@ -52,15 +52,13 @@ export default function ReportDetailScreen() {
       const machinePhotoUrls = await Promise.all(
         (report.machinePhotos || []).map(async (p) => ({
           url: await photoToDataUrl(p.blob),
-          label: 'เครื่องจักร',
-          caption: p.caption,
+          label: 'รูปภาพ',
         }))
       );
       const sitePhotoUrls = await Promise.all(
         (report.sitePhotos || []).map(async (p) => ({
           url: await photoToDataUrl(p.blob),
-          label: 'สถานที่/Yard',
-          caption: p.caption,
+          label: 'รูปภาพ',
         }))
       );
       if (mounted) {
@@ -95,7 +93,7 @@ export default function ReportDetailScreen() {
   const rowNoBorder = "flex items-stretch";
 
   return (
-    <div className="min-h-screen bg-gray-100 print:bg-white print:min-h-0">
+    <div className="min-h-screen bg-slate-50 print:bg-white print:min-h-0">
       {/* Embedded style for exact 100% full-width A4 print rendering */}
       <style>{`
         @media print {
@@ -125,35 +123,34 @@ export default function ReportDetailScreen() {
       `}</style>
 
       {/* Top Bar */}
-      <header className="sticky top-0 z-40 bg-[#1B3A5F] text-white px-4 py-3 shadow-lg print:hidden">
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200 text-slate-900 px-4 py-3 shadow-xs print:hidden">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setScreen('home')}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors text-slate-700"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <div className="min-w-0">
-              <h1 className="font-bold text-base truncate">{report.companyName || 'รายงาน'}</h1>
-              <p className="text-xs opacity-80">📅 {toThaiDateFull(report.visitDate)} • ครั้งที่ {report.visitNo}</p>
+              <h1 className="font-bold text-base text-slate-900 truncate">{report.companyName || 'รายงาน'}</h1>
+              <p className="text-[11px] text-slate-500">{toThaiDateFull(report.visitDate)}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleEdit}
-              className="min-h-[44px] px-3.5 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg font-bold text-sm flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all"
             >
-              ✏️ <span className="hidden sm:inline">แก้ไข</span>
+              ✏️ แก้ไข
             </button>
             <button
               onClick={handlePrint}
-              className="min-h-[44px] px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold text-sm flex items-center gap-1.5 transition-colors shadow"
-              title="พิมพ์เอกสาร หรือเลือก Save as PDF ได้ตัวหนังสือตรงคมชัด 100%"
+              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all flex items-center gap-1.5"
             >
-              🖨️ <span>พิมพ์ / เซฟ PDF</span>
+              🖨️ พิมพ์ / PDF
             </button>
           </div>
         </div>
@@ -252,16 +249,15 @@ export default function ReportDetailScreen() {
                 {photoItems.slice(0, 6).map((p, idx) => (
                   <div
                     key={idx}
-                    onClick={() => setSelectedPhoto({ url: p.url, title: `${p.label} ${idx + 1}`, caption: p.caption })}
-                    className="border border-slate-200 rounded-md p-1 text-center bg-white w-[130px] print:w-[110px] print:p-0.5 cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group relative"
+                    onClick={() => setSelectedPhoto({ url: p.url, title: `รูปภาพ ${idx + 1}` })}
+                    className="border border-slate-200 rounded-md p-1 bg-white w-[130px] print:w-[110px] print:p-0.5 cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group relative overflow-hidden"
                   >
                     <div className="relative overflow-hidden rounded">
-                      <img src={p.url} className="w-full h-16 print:h-11 object-cover rounded group-hover:scale-105 transition-transform duration-200" alt={p.label} />
+                      <img src={p.url} className="w-full h-16 print:h-12 object-cover rounded group-hover:scale-105 transition-transform duration-200" alt="photo" />
                       <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[11px] font-bold print:hidden">
                         🔍 ขยาย
                       </div>
                     </div>
-                    <div className="text-[10px] print:text-[9px] text-slate-500 mt-0.5 truncate">{p.label}{p.caption ? ': ' + p.caption : ''}</div>
                   </div>
                 ))}
               </div>
@@ -316,15 +312,22 @@ export default function ReportDetailScreen() {
                   { label: 'ฐานลูกค้า', value: scores.customerBase },
                   { label: 'ความเป็นพันธมิตร', value: scores.partnership },
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-[#DCE9F5] rounded-md px-2 py-2 print:py-1 text-center border border-[#bbe0f5] flex flex-col justify-center items-center">
+                  <div key={idx} className="bg-[#DCE9F5] rounded-md px-2 py-2 print:py-1 text-center border border-[#bbe0f5] flex flex-col justify-center items-center" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
                     <div className="text-[10px] print:text-[9px] font-bold text-[#1B3A5F] mb-0.5">{item.label}</div>
                     <div className="text-base print:text-sm font-bold text-slate-900 leading-none">{item.value !== null ? item.value : '-'}</div>
                   </div>
                 ))}
               </div>
-              <div className="bg-[#1B3A5F] text-white rounded-lg px-4 py-2.5 print:py-1.5 print:px-2.5 text-center min-w-[100px] print:min-w-[85px] flex flex-col justify-center items-center">
-                <div className="text-[10px] print:text-[9px] opacity-90 mb-0.5">คะแนนเฉลี่ย</div>
-                <div className="text-lg print:text-base font-bold leading-none">⭐ {avg !== null ? avg.toFixed(1) : '-'}/10</div>
+              <div 
+                className="bg-[#DCE9F5] text-[#1B3A5F] border-2 border-[#1B3A5F] rounded-lg px-4 py-2.5 print:py-1.5 print:px-2.5 text-center min-w-[100px] print:min-w-[85px] flex flex-col justify-center items-center shadow-xs"
+                style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+              >
+                <div className="text-[11px] print:text-[10px] font-bold text-[#1B3A5F] mb-0.5 uppercase tracking-wide">คะแนนเฉลี่ย</div>
+                <div className="text-lg print:text-base font-extrabold text-[#1B3A5F] leading-none flex items-center justify-center gap-1">
+                  <span className="text-amber-500">⭐</span>
+                  <span>{avg !== null ? avg.toFixed(1) : '-'}</span>
+                  <span className="text-xs print:text-[10px] font-semibold text-[#1B3A5F]/80">/10</span>
+                </div>
               </div>
             </div>
 
@@ -385,7 +388,7 @@ export default function ReportDetailScreen() {
         </div>
 
         {/* Bottom info */}
-        <div className="text-center text-xs text-gray-400 mt-4 pb-8 print:hidden">
+        <div className="text-center text-xs text-slate-600 mt-4 pb-8 print:hidden">
           เอกสารสัดส่วน A4 1 หน้ามาตรฐาน • ตรวจสอบข้อความและความถูกต้องก่อนบันทึก
         </div>
       </div>

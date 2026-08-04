@@ -14,28 +14,28 @@ function Accordion({ title, isOpen, onToggle, children, index }: {
   title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode; index: number;
 }) {
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-xs">
       <button
         type="button"
         onClick={onToggle}
         className="w-full min-h-touch px-5 py-4 flex items-center justify-between text-left
-          hover:bg-gray-50 active:bg-gray-100 transition-colors"
+          hover:bg-slate-50 active:bg-slate-100 transition-colors"
       >
-        <span className="font-bold text-base text-primary">
-          <span className="inline-flex items-center justify-center w-7 h-7 bg-primary text-white rounded-full text-sm mr-2">
+        <span className="font-bold text-base text-blue-600 flex items-center">
+          <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-600 text-white rounded-full text-sm mr-2 shadow-xs">
             {index}
           </span>
           {title}
         </span>
         <svg
-          className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none" stroke="currentColor" viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
       {isOpen && (
-        <div className="px-5 pb-5 border-t border-gray-100 pt-4">
+        <div className="px-5 pb-5 border-t border-slate-200 pt-4">
           {children}
         </div>
       )}
@@ -69,9 +69,12 @@ export default function Step4Observations({ report, onChange }: Props) {
     updateObs({ machineValue: mv });
   };
 
+  const inputStyle = "w-full min-h-touch px-3 py-2 text-base border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs";
+  const textareaStyle = "w-full px-3 py-2 text-base border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 resize-y focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs";
+
   return (
     <div className="space-y-3">
-      <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+      <h2 className="text-xl font-bold text-blue-600 flex items-center gap-2">
         🔍 ข้อสังเกต
       </h2>
 
@@ -85,7 +88,7 @@ export default function Step4Observations({ report, onChange }: Props) {
             { key: 'isFamily', label: 'ธุรกิจครอบครัว' },
           ].map(f => (
             <div key={f.key}>
-              <label className="text-xs text-gray-500 mb-1 block">{f.label}</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">{f.label}</label>
               <input
                 type="text"
                 value={(obs.experience as any)[f.key] || ''}
@@ -93,8 +96,7 @@ export default function Step4Observations({ report, onChange }: Props) {
                   experience: { ...obs.experience, [f.key]: e.target.value }
                 })}
                 placeholder={f.label}
-                className="w-full min-h-touch px-3 py-2 text-base border border-gray-300 rounded-lg
-                  focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className={inputStyle}
               />
             </div>
           ))}
@@ -105,37 +107,34 @@ export default function Step4Observations({ report, onChange }: Props) {
       <Accordion title="ทีมงาน Service/Operation" isOpen={openSections.has(2)} onToggle={() => toggleSection(2)} index={2}>
         <div className="space-y-4">
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">รายละเอียดทีมงาน</label>
+            <label className="text-xs font-semibold text-slate-600 mb-1 block">รายละเอียดทีมงาน</label>
             <textarea
               value={obs.team.main}
               onChange={(e) => updateObs({ team: { ...obs.team, main: e.target.value } })}
               rows={3}
               placeholder="รายละเอียดทีมงาน"
-              className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg resize-y
-                focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className={textareaStyle}
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Srv. Team</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Srv. Team</label>
               <input
                 type="text"
                 value={obs.team.srvTeam}
                 onChange={(e) => updateObs({ team: { ...obs.team, srvTeam: e.target.value } })}
                 placeholder="จำนวน/รายละเอียด Srv. Team"
-                className="w-full min-h-touch px-3 py-2 text-base border border-gray-300 rounded-lg
-                  focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className={inputStyle}
               />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Op. Team</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Op. Team</label>
               <input
                 type="text"
                 value={obs.team.opTeam}
                 onChange={(e) => updateObs({ team: { ...obs.team, opTeam: e.target.value } })}
                 placeholder="จำนวน/รายละเอียด Op. Team"
-                className="w-full min-h-touch px-3 py-2 text-base border border-gray-300 rounded-lg
-                  focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className={inputStyle}
               />
             </div>
           </div>
@@ -149,8 +148,7 @@ export default function Step4Observations({ report, onChange }: Props) {
           onChange={(e) => updateObs({ spareParts: e.target.value })}
           rows={3}
           placeholder="รายละเอียดการจัดการอะไหล่"
-          className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className={textareaStyle}
         />
       </Accordion>
 
@@ -161,8 +159,7 @@ export default function Step4Observations({ report, onChange }: Props) {
           onChange={(e) => updateObs({ theftPrevention: e.target.value })}
           rows={3}
           placeholder="รายละเอียดระบบป้องกันการสูญหาย"
-          className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className={textareaStyle}
         />
       </Accordion>
 
@@ -173,8 +170,7 @@ export default function Step4Observations({ report, onChange }: Props) {
           onChange={(e) => updateObs({ customerCharacteristics: e.target.value })}
           rows={3}
           placeholder="ลักษณะลูกค้าที่มี"
-          className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className={textareaStyle}
         />
       </Accordion>
 
@@ -187,15 +183,14 @@ export default function Step4Observations({ report, onChange }: Props) {
           <CurrencyInput label="ทั้งระบบ" value={obs.machineValue.total} onChange={(v) => handleMachineValueChange('total', v)} />
         </div>
         <div>
-          <label className="text-xs text-gray-500 mb-1 block">หมายเหตุ</label>
+          <label className="text-xs font-semibold text-slate-600 mb-1 block">หมายเหตุ</label>
           <input
             type="text"
             value={obs.machineValue.remark}
             onChange={(e) => updateObs({
               machineValue: { ...obs.machineValue, remark: e.target.value }
             })}
-            className="w-full min-h-touch px-3 py-2 text-base border border-gray-300 rounded-lg
-              focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            className={inputStyle}
           />
         </div>
       </Accordion>
@@ -207,8 +202,7 @@ export default function Step4Observations({ report, onChange }: Props) {
           onChange={(e) => updateObs({ competitors: e.target.value })}
           rows={3}
           placeholder="คู่แข่งในตลาด"
-          className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className={textareaStyle}
         />
       </Accordion>
 
@@ -219,10 +213,10 @@ export default function Step4Observations({ report, onChange }: Props) {
           onChange={(e) => updateObs({ others: e.target.value })}
           rows={3}
           placeholder="ข้อสังเกตอื่นๆ"
-          className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg resize-y
-            focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className={textareaStyle}
         />
       </Accordion>
     </div>
   );
 }
+
