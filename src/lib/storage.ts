@@ -4,6 +4,7 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { VisitReport } from '../types/report';
 import { createEmptyReport } from '../types/report';
+import { generateUUID } from './uuid';
 
 // ----- Storage Interface (เผื่อต่อ API ภายหลัง) -----
 export interface IStorageService {
@@ -53,7 +54,7 @@ export const storageService: IStorageService = {
 
     const newReport: VisitReport = {
       ...structuredClone(original),
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       status: 'draft',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -111,7 +112,7 @@ export async function importReportFromJSON(json: string): Promise<VisitReport> {
   if (data.sitePhotos) convertPhotosBack(data.sitePhotos);
 
   // Assign new ID for imported report
-  data.id = crypto.randomUUID();
+  data.id = generateUUID();
   data.updatedAt = new Date().toISOString();
 
   await storageService.saveReport(data);

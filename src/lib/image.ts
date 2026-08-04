@@ -2,6 +2,7 @@
 // Image Utilities — resize, compress
 // ==========================================
 import type { Photo } from '../types/report';
+import { generateUUID } from './uuid';
 
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.75;
@@ -13,7 +14,7 @@ export async function processImage(file: File): Promise<Photo> {
   const thumbnailBlob = await resizeImage(file, THUMBNAIL_SIZE, 0.6);
 
   return {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     blob,
     thumbnailBlob,
     caption: '',

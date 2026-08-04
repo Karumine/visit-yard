@@ -1,6 +1,7 @@
 // ==========================================
 // TypeScript Types — รายงานการเข้าเยี่ยม ลูกค้า/Yard
 // ==========================================
+import { generateUUID } from '../lib/uuid';
 
 /** ประเภทลูกค้า / Yard / กลุ่มเครื่องจักร */
 export type EntityType = 'existing' | 'new';
@@ -143,7 +144,7 @@ export interface VisitReport {
 export function createEmptyReport(): VisitReport {
   const now = new Date().toISOString();
   return {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     status: 'draft',
     createdAt: now,
     updatedAt: now,

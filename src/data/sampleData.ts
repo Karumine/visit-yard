@@ -3,10 +3,11 @@
 // ==========================================
 import type { VisitReport } from '../types/report';
 import { storageService } from '../lib/storage';
+import { generateUUID } from '../lib/uuid';
 
 export async function loadSampleData(): Promise<void> {
   const sample: VisitReport = {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     status: 'completed',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
