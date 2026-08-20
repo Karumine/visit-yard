@@ -457,16 +457,61 @@ function ExecutionField({
     setIsListening(true);
   };
 
-  // Mock Photo Capture
+  // Real Photo Upload
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      const dataUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+              const maxDim = 1200;
+              let { width, height } = img;
+              if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                  height = Math.round((height * maxDim) / width);
+                  width = maxDim;
+                } else {
+                  width = Math.round((width * maxDim) / height);
+                  height = maxDim;
+                }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx?.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL('image/jpeg', 0.8));
+            };
+            img.onerror = () => resolve(event.target?.result as string);
+            img.src = event.target?.result as string;
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        dataUrls.push(dataUrl);
+      }
+      const existingMedia = value?.mediaUrls || [];
+      onChange({ mediaUrls: [...existingMedia, ...dataUrls] });
+    } catch (err) {
+      console.error('Failed to upload photo:', err);
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   const handleAddPhoto = () => {
-    const mockPhotos = [
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&q=80',
-      'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&q=80',
-      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&q=80',
-    ];
-    const newPhoto = mockPhotos[Math.floor(Math.random() * mockPhotos.length)];
-    const existingMedia = value?.mediaUrls || [];
-    onChange({ mediaUrls: [...existingMedia, newPhoto] });
+    fileInputRef.current?.click();
   };
 
   const handleRemovePhoto = (idx: number) => {
@@ -476,6 +521,14 @@ function ExecutionField({
 
   return (
     <div className={`exec-field-card ${hasWarning ? 'has-warning' : ''} ${hasError ? 'has-error' : ''}`}>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
       <div className="exec-field-header">
         <span className="exec-field-label">
           {field.label}

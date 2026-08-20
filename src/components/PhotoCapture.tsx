@@ -3,15 +3,16 @@
 // ==========================================
 import React, { useRef, useState } from 'react';
 import type { Photo } from '../types/report';
-import { processImage, calculateTotalSize, createThumbnailURL } from '../lib/image';
+import { processImage, calculateTotalSize, createThumbnailURL, createPhotoURL } from '../lib/image';
 
 interface PhotoCaptureProps {
   photos: Photo[];
   onChange: (photos: Photo[]) => void;
   label?: string;
+  category?: string;
 }
 
-export default function PhotoCapture({ photos, onChange, label = 'รูปภาพ' }: PhotoCaptureProps) {
+export default function PhotoCapture({ photos, onChange, label = 'รูปภาพ', category }: PhotoCaptureProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [viewingPhoto, setViewingPhoto] = useState<Photo | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -25,6 +26,12 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
       const newPhotos: Photo[] = [];
       for (let i = 0; i < files.length; i++) {
         const photo = await processImage(files[i]);
+        if (category) {
+          photo.category = category;
+          if (!photo.caption) {
+            photo.caption = category;
+          }
+        }
         newPhotos.push(photo);
       }
       onChange([...photos, ...newPhotos]);
@@ -71,7 +78,7 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
                 onClick={() => setViewingPhoto(photo)}
               >
                 <img
-                  src={createThumbnailURL(photo)}
+                  src={createThumbnailURL(photo) || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23f1f5f9"/></svg>'}
                   alt={photo.caption || `รูปที่ ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -163,7 +170,7 @@ export default function PhotoCapture({ photos, onChange, label = 'รูปภ�
             onClick={() => setViewingPhoto(null)}
           >✕</button>
           <img
-            src={URL.createObjectURL(viewingPhoto.blob)}
+            src={createPhotoURL(viewingPhoto)}
             alt={viewingPhoto.caption || 'รูปภาพ'}
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}

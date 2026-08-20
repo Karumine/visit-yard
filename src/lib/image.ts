@@ -13,14 +13,30 @@ export async function processImage(file: File): Promise<Photo> {
   const blob = await resizeImage(file, MAX_DIMENSION, JPEG_QUALITY);
   const thumbnailBlob = await resizeImage(file, THUMBNAIL_SIZE, 0.6);
 
+  const url = await blobToDataURL(blob);
+  const thumbnailUrl = await blobToDataURL(thumbnailBlob);
+
   return {
     id: generateUUID(),
     blob,
     thumbnailBlob,
+    url,
+    thumbnailUrl,
+    blobBase64: url,
+    thumbnailBase64: thumbnailUrl,
     caption: '',
     takenAt: new Date().toISOString(),
     gps: await getGPS(),
-  };
+  } as any;
+}
+
+function blobToDataURL(blob: Blob): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(blob);
+  });
 }
 
 async function resizeImage(file: File, maxDim: number, quality: number): Promise<Blob> {
@@ -70,11 +86,15 @@ async function resizeImage(file: File, maxDim: number, quality: number): Promise
 async function getGPS(): Promise<{ lat: number; lng: number } | undefined> {
   try {
     if (!navigator.geolocation) return undefined;
+    if (navigator.permissions && navigator.permissions.query) {
+      const status = await navigator.permissions.query({ name: 'geolocation' });
+      if (status.state === 'denied') return undefined;
+    }
     return new Promise((resolve) => {
       navigator.geolocation.getCurrentPosition(
         (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
         () => resolve(undefined),
-        { timeout: 5000, enableHighAccuracy: false }
+        { timeout: 3000, enableHighAccuracy: false }
       );
     });
   } catch {
@@ -90,11 +110,35 @@ export function calculateTotalSize(photos: Photo[]): string {
   return `${(totalBytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/** สร้าง Object URL จาก Blob */
+/** สร้าง Object URL หรือคืนค่า URL เดิม */
 export function createPhotoURL(photo: Photo): string {
-  return URL.createObjectURL(photo.blob);
+  if (!photo) return '';
+  if ((photo as any).url) return (photo as any).url;
+  if ((photo as any).blobBase64) return (photo as any).blobBase64;
+  if (photo.blob instanceof Blob) {
+    try {
+      return URL.createObjectURL(photo.blob);
+    } catch {
+      return '';
+    }
+  }
+  return '';
 }
 
 export function createThumbnailURL(photo: Photo): string {
-  return URL.createObjectURL(photo.thumbnailBlob || photo.blob);
+  if (!photo) return '';
+  if ((photo as any).url) return (photo as any).url;
+  if ((photo as any).thumbnailBase64) return (photo as any).thumbnailBase64;
+  if ((photo as any).blobBase64) return (photo as any).blobBase64;
+  if (photo.thumbnailBlob instanceof Blob) {
+    try {
+      return URL.createObjectURL(photo.thumbnailBlob);
+    } catch { /* ignore */ }
+  }
+  if (photo.blob instanceof Blob) {
+    try {
+      return URL.createObjectURL(photo.blob);
+    } catch { /* ignore */ }
+  }
+  return '';
 }

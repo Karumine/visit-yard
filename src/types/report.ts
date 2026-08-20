@@ -15,9 +15,29 @@ export interface Photo {
   blob: Blob;
   thumbnailBlob?: Blob;
   caption?: string;
+  category?: string; // หมวดหมู่รูปภาพ (1. ป้ายทางเข้า, 2. สำนักงาน, ฯลฯ)
   takenAt: string; // ISO date
   gps?: { lat: number; lng: number };
 }
+
+/** 8 หัวข้อรูปภาพตามกำหนด */
+export interface PhotoCategoryInfo {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+}
+
+export const PHOTO_CATEGORIES: PhotoCategoryInfo[] = [
+  { id: 'entrance_sign', name: '1. ป้ายทางเข้า', icon: '🪧', description: 'ป้ายชื่อบริษัท / ทางเข้า Yard' },
+  { id: 'office', name: '2. สำนักงาน', icon: '🏢', description: 'อาคารสำนักงาน / โต๊ะทำงาน' },
+  { id: 'factory', name: '3. โรงงานปฏิบัติการ', icon: '🏭', description: 'อาคารโรงงาน / สายการผลิต' },
+  { id: 'workshop', name: '4. workshop พื้นที่ทำงาน', icon: '🛠️', description: 'พื้นที่ทำงานวิศวกรรม / ซ่อมบำรุง' },
+  { id: 'warehouse', name: '5. โกดัง', icon: '📦', description: 'โกดังเก็บสินค้า / คลังวัตถุดิบ' },
+  { id: 'shipping', name: '6. รับส่งสินค้า', icon: '🚚', description: 'จุดโหลดสินค้า / ลานรับส่ง' },
+  { id: 'team', name: '7. ทีมงาน', icon: '👥', description: 'ทีมวิศวกร / ผู้บริหาร / พนักงาน' },
+  { id: 'brochure', name: '8. โบชัว', icon: '📄', description: 'เอกสารประชาสัมพันธ์ / แคตตาล็อก' },
+];
 
 /** ผู้ติดต่อ (ลูกค้า/Yard) */
 export interface Contact {

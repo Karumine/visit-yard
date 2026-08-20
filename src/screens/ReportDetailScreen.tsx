@@ -6,17 +6,38 @@ import { useAppStore } from '../lib/store';
 import { toThaiDateFull } from '../lib/thaidate';
 import { calculateAverageScore } from '../types/report';
 
-/** Convert Blob to Data URL */
-function photoToDataUrl(blob: Blob): Promise<string> {
+/** Convert Photo object or Blob to Data URL / String URL */
+function photoToDataUrl(p: any): Promise<string> {
   return new Promise((resolve) => {
-    if (!blob) {
+    if (!p) {
       resolve('');
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(blob);
+    if (typeof p === 'string') {
+      resolve(p);
+      return;
+    }
+    if (p.url) {
+      resolve(p.url);
+      return;
+    }
+    if (p.blobBase64) {
+      resolve(p.blobBase64);
+      return;
+    }
+    if (p.blob instanceof Blob) {
+      try {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(p.blob);
+        return;
+      } catch {
+        resolve('');
+        return;
+      }
+    }
+    resolve('');
   });
 }
 
@@ -43,22 +64,24 @@ export default function ReportDetailScreen() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Convert photo blobs to data URLs on mount
+  // Convert photo blobs/URLs to data URLs on mount
   useEffect(() => {
     if (!report) return;
     let mounted = true;
 
     (async () => {
       const machinePhotoUrls = await Promise.all(
-        (report.machinePhotos || []).map(async (p) => ({
-          url: await photoToDataUrl(p.blob),
-          label: 'รูปภาพ',
+        (report.machinePhotos || []).map(async (p: any) => ({
+          url: await photoToDataUrl(p),
+          label: p.category || 'รูปภาพเครื่องจักร',
+          caption: p.caption || '',
         }))
       );
       const sitePhotoUrls = await Promise.all(
-        (report.sitePhotos || []).map(async (p) => ({
-          url: await photoToDataUrl(p.blob),
-          label: 'รูปภาพ',
+        (report.sitePhotos || []).map(async (p: any) => ({
+          url: await photoToDataUrl(p),
+          label: p.category || 'รูปภาพหน้างาน',
+          caption: p.caption || '',
         }))
       );
       if (mounted) {
@@ -99,15 +122,15 @@ export default function ReportDetailScreen() {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 4mm 6mm;
+            margin: 6mm 8mm;
           }
           html, body {
             background-color: #ffffff !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
-            height: 100% !important;
-            overflow: hidden !important;
+            height: auto !important;
+            overflow: visible !important;
           }
           body {
             -webkit-print-color-adjust: exact !important;
@@ -118,6 +141,10 @@ export default function ReportDetailScreen() {
             max-width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
+          }
+          .print-break-page {
+            break-before: page !important;
+            page-break-before: always !important;
           }
         }
       `}</style>
@@ -243,26 +270,6 @@ export default function ReportDetailScreen() {
               </div>
             </div>
 
-            {/* Photos */}
-            {photoItems.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3 print:mb-1.5 print:gap-1.5">
-                {photoItems.slice(0, 6).map((p, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => setSelectedPhoto({ url: p.url, title: `รูปภาพ ${idx + 1}` })}
-                    className="border border-slate-200 rounded-md p-1 bg-white w-[130px] print:w-[110px] print:p-0.5 cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group relative overflow-hidden"
-                  >
-                    <div className="relative overflow-hidden rounded">
-                      <img src={p.url} className="w-full h-16 print:h-12 object-cover rounded group-hover:scale-105 transition-transform duration-200" alt="photo" />
-                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[11px] font-bold print:hidden">
-                        🔍 ขยาย
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* SECTION 4: ข้อสังเกต */}
             <div className={sectionHeader}>4. ข้อสังเกต (Observations)</div>
             <div className="border border-slate-300 rounded-sm mb-3 print:mb-1.5 text-xs print:text-[11px]">
@@ -383,6 +390,78 @@ export default function ReportDetailScreen() {
                 </div>
               ))}
             </div>
+
+            {/* APPENDIX PAGES: ภาคผนวกรูปภาพประกอบการเข้าเยี่ยม (9 รูปต่อ 1 หน้า A4) */}
+            {photoItems.length > 0 && (() => {
+              const PHOTOS_PER_PAGE = 9;
+              const pagesCount = Math.ceil(photoItems.length / PHOTOS_PER_PAGE);
+              const pages = [];
+
+              for (let pageIdx = 0; pageIdx < pagesCount; pageIdx++) {
+                const pagePhotos = photoItems.slice(pageIdx * PHOTOS_PER_PAGE, (pageIdx + 1) * PHOTOS_PER_PAGE);
+                pages.push(
+                  <div 
+                    key={pageIdx} 
+                    className="mt-8 pt-6 border-t-2 border-slate-200 print:mt-0 print:pt-4 print:border-none print-break-page"
+                    style={{ pageBreakBefore: 'always', breakBefore: 'page' }}
+                  >
+                    {/* Header */}
+                    <div className="flex justify-between items-center border-b-2 border-[#1B3A5F] pb-2 mb-4 print:pb-1.5 print:mb-3">
+                      <div className="flex items-center gap-2.5">
+                        <img 
+                          src="/Logo_Agile Assets_CMYK.png" 
+                          className="h-8 print:h-7 object-contain" 
+                          alt="Logo" 
+                          onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }} 
+                        />
+                        <div>
+                          <div className="text-base font-bold text-[#1B3A5F] leading-tight print:text-sm">ภาคผนวก: รูปภาพประกอบการเข้าเยี่ยม</div>
+                          <div className="text-[11px] text-slate-500 print:text-[10px]">Agile Assets — Customer/Yard Visit Report (หน้า {pageIdx + 2})</div>
+                        </div>
+                      </div>
+                      <div className="text-right text-xs text-slate-600 print:text-[11px] leading-snug">
+                        <div><strong className="text-[#1B3A5F]">บริษัท:</strong> {report.companyName || '-'}</div>
+                        <div><strong className="text-[#1B3A5F]">วันที่เข้าเยี่ยม:</strong> {toThaiDateFull(report.visitDate)}</div>
+                      </div>
+                    </div>
+
+                    {/* 3x3 Photo Grid (Max 9 Photos per A4 page) */}
+                    <div className="grid grid-cols-3 gap-3 print:gap-2.5">
+                      {pagePhotos.map((p, idx) => {
+                        const globalPhotoNo = pageIdx * PHOTOS_PER_PAGE + idx + 1;
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => setSelectedPhoto({ url: p.url, title: `รูปภาพประกอบที่ ${globalPhotoNo}` })}
+                            className="border border-slate-300 rounded-lg p-2.5 bg-white flex flex-col justify-between shadow-xs hover:shadow-md transition-all cursor-pointer group"
+                          >
+                            <div className="flex items-center justify-between text-xs font-bold text-[#1B3A5F] mb-2 pb-1 border-b border-slate-200 print:mb-1 print:pb-0.5 print:text-[11px]">
+                              <span>📸 รูปที่ #{globalPhotoNo}</span>
+                              <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-semibold border border-blue-200 print:text-[9px]">
+                                {p.label || 'หลักฐาน'}
+                              </span>
+                            </div>
+                            <div className="relative overflow-hidden rounded-md bg-slate-100 h-36 print:h-28 flex items-center justify-center border border-slate-200">
+                              <img 
+                                src={p.url} 
+                                className="w-full h-full object-cover rounded-md group-hover:scale-105 transition-transform duration-200" 
+                                alt={`Photo ${globalPhotoNo}`} 
+                              />
+                            </div>
+                            {p.caption && (
+                              <div className="text-[11px] text-slate-600 mt-2 line-clamp-2 leading-tight print:mt-1 print:text-[10px]">
+                                {p.caption}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              }
+              return pages;
+            })()}
 
           </div>
         </div>

@@ -1871,6 +1871,63 @@ a:hover {
   border: 1px solid #e5e7eb;
 }
 
+/* Table Evidence Photo Reference Badges (Ultra-compact, 0 extra row height) */
+.a4-evidence-tag-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.a4-evidence-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Appendix Grid (9 photos per A4 page) */
+.a4-appendix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.appendix-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.appendix-card-img {
+  width: 100%;
+  height: 135px;
+  object-fit: cover;
+  background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.appendix-card-info {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  background: #ffffff;
+}
+
 .a4-footer-signatures {
   display: flex;
   justify-content: space-around;
@@ -2069,6 +2126,41 @@ a:hover {
   
   .sig-name { font-size: 10px !important; padding-bottom: 0 !important; }
   .sig-title, .sig-date { font-size: 9px !important; margin-top: 0 !important; }
+
+  .a4-appendix-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .appendix-card {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .appendix-card-img {
+    height: 105px !important;
+  }
+
+  .appendix-card-info {
+    padding: 4px 6px !important;
+  }
+
+  .a4-evidence-tag-group {
+    gap: 3px !important;
+  }
+
+  .a4-evidence-tag {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    font-size: 8.5px !important;
+    padding: 0px 4px !important;
+    line-height: 1.1 !important;
+  }
 
   .card, .exec-field-card {
     border: 1px solid #ddd !important;

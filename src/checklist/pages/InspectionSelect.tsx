@@ -148,6 +148,12 @@ export default function InspectionSelect() {
                             {machine.brand} {machine.serialNumber && `· ${machine.serialNumber}`}
                           </div>
                         )}
+                        {(machine.contractNo || machine.registrationNo) && (
+                          <div className="flex items-center gap-sm text-xs text-tertiary">
+                            <span style={{ width: '14px', textAlign: 'center', fontSize: '12px' }}>📜</span>
+                            {machine.contractNo && `สัญญา: ${machine.contractNo}`} {machine.registrationNo && `· ทะเบียน: ${machine.registrationNo}`}
+                          </div>
+                        )}
                         {lastInspection && (
                           <div className="flex items-center gap-sm">
                             <Calendar size={14} />

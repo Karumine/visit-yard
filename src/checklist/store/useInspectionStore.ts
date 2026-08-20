@@ -4,6 +4,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import type { InspectionRecord, FieldValue, InspectionStatus, InspectionSummary } from '../types/inspection';
+import { saveInspectionToFirebase } from '../../lib/firebase';
 
 const STORAGE_KEY = 'checklist_inspections';
 
@@ -11,56 +12,25 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
-// Seed some demo inspections
-const SEED_INSPECTIONS: InspectionRecord[] = [
-  {
-    id: 'insp_001',
-    templateId: 'tmpl_001',
-    templateVersion: 1,
-    machineId: 'mach_001',
-    status: 'completed',
-    values: [
-      { fieldId: 'f_capacity', value: 14000, timestamp: '2026-03-15T10:00:00Z' },
-      { fieldId: 'f_size', value: 600, timestamp: '2026-03-15T10:01:00Z' },
-      { fieldId: 'f_chiller', value: 15, timestamp: '2026-03-15T10:02:00Z' },
-      { fieldId: 'f_air_pressure', value: 30, timestamp: '2026-03-15T10:03:00Z' },
-      { fieldId: 'f_coolant_temp', value: 30, timestamp: '2026-03-15T10:04:00Z' },
-      { fieldId: 'f_machine_curr', value: 100, timestamp: '2026-03-15T10:05:00Z' },
-      { fieldId: 'f_total_curr', value: 263, timestamp: '2026-03-15T10:06:00Z' },
-      { fieldId: 'f_power_status', value: 'OK', timestamp: '2026-03-15T10:07:00Z' },
-      { fieldId: 'f_plant_housing', value: 4, timestamp: '2026-03-15T10:08:00Z' },
-      { fieldId: 'f_chassis', value: 'pass', timestamp: '2026-03-15T10:09:00Z' },
-      { fieldId: 'f_ventilation', value: 5, timestamp: '2026-03-15T10:10:00Z' },
-      { fieldId: 'f_safety', value: 4, timestamp: '2026-03-15T10:11:00Z' },
-      { fieldId: 'f_body_paint', value: 3, timestamp: '2026-03-15T10:12:00Z' },
-      { fieldId: 'f_run_hours', value: 9000, timestamp: '2026-03-15T10:13:00Z' },
-      { fieldId: 'f_grounding', value: 'OK', timestamp: '2026-03-15T10:14:00Z' },
-      { fieldId: 'f_power_conn', value: 'OK', timestamp: '2026-03-15T10:15:00Z' },
-      { fieldId: 'f_lightning', value: 'OK', timestamp: '2026-03-15T10:16:00Z' },
-      { fieldId: 'f_location_check', value: 'OK', timestamp: '2026-03-15T10:17:00Z' },
-      { fieldId: 'f_utility', value: 'OK', timestamp: '2026-03-15T10:18:00Z' },
-      { fieldId: 'f_operation', value: 'OK', timestamp: '2026-03-15T10:19:00Z' },
-      { fieldId: 'f_sparepart', value: 'OK', timestamp: '2026-03-15T10:20:00Z' },
-      { fieldId: 'f_remote', value: 'OK', timestamp: '2026-03-15T10:21:00Z' },
-      { fieldId: 'f_control_panel', value: 'OK', timestamp: '2026-03-15T10:22:00Z' },
-    ],
-    startedAt: '2026-03-15T10:00:00Z',
-    completedAt: '2026-03-15T11:30:00Z',
-    inspectorId: 'user_001',
-    inspectorName: 'วิศวกร สมชาย',
-  },
-];
+const SEED_INSPECTIONS: InspectionRecord[] = [];
 
 function loadInspections(): InspectionRecord[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) return JSON.parse(stored);
   } catch { /* ignore */ }
-  return SEED_INSPECTIONS;
+  return [];
 }
 
 function saveInspections(inspections: InspectionRecord[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(inspections));
+  
+  // Sync with Firebase Cloud Firestore in background
+  inspections.forEach(insp => {
+    saveInspectionToFirebase(insp).catch(err => {
+      console.warn('Firebase inspection sync deferred:', err);
+    });
+  });
 }
 
 export function useInspectionStore() {

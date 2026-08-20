@@ -27,13 +27,26 @@ class VisitYardDB extends Dexie {
   }
 }
 
+import { 
+  saveVisitReportToFirebase, 
+  deleteVisitReportFromFirebase, 
+  getAllVisitReportsFromFirebase 
+} from './firebase';
+
 const db = new VisitYardDB();
 
-// ----- Local Storage Service (IndexedDB via Dexie) -----
+// ----- Storage Service (IndexedDB + Firebase Cloud Firestore Sync) -----
 export const storageService: IStorageService = {
   async saveReport(report: VisitReport): Promise<void> {
     report.updatedAt = new Date().toISOString();
     await db.reports.put(report);
+    
+    // Sync with Firebase Cloud Firestore in background
+    try {
+      await saveVisitReportToFirebase(report);
+    } catch (err) {
+      console.warn('Firebase sync deferred (Offline mode):', err);
+    }
   },
 
   async getReport(id: string): Promise<VisitReport | undefined> {
@@ -41,11 +54,36 @@ export const storageService: IStorageService = {
   },
 
   async getAllReports(): Promise<VisitReport[]> {
+    // Try to sync with Firebase Cloud Firestore
+    try {
+      // 1. Push any local reports inเครื่อง up to Firebase Firestore
+      const localReports = await db.reports.toArray();
+      if (localReports.length > 0) {
+        for (const rep of localReports) {
+          await saveVisitReportToFirebase(rep);
+        }
+      }
+
+      // 2. Pull remote reports from Firebase Firestore
+      const remoteReports = await getAllVisitReportsFromFirebase();
+      if (remoteReports && remoteReports.length > 0) {
+        for (const rep of remoteReports) {
+          await db.reports.put(rep);
+        }
+      }
+    } catch (err) {
+      console.warn('Firebase fetch reports error (offline fallback):', err);
+    }
     return db.reports.orderBy('updatedAt').reverse().toArray();
   },
 
   async deleteReport(id: string): Promise<void> {
     await db.reports.delete(id);
+    try {
+      await deleteVisitReportFromFirebase(id);
+    } catch (err) {
+      console.warn('Firebase delete error:', err);
+    }
   },
 
   async duplicateReport(id: string): Promise<VisitReport> {

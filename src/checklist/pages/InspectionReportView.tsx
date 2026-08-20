@@ -51,6 +51,12 @@ export default function InspectionReportView({ inspection, template, machine }: 
     });
   });
 
+  const PHOTOS_PER_PAGE = 9;
+  const photoPages: typeof fieldsWithPhotos[] = [];
+  for (let i = 0; i < fieldsWithPhotos.length; i += PHOTOS_PER_PAGE) {
+    photoPages.push(fieldsWithPhotos.slice(i, i + PHOTOS_PER_PAGE));
+  }
+
   return (
     <div className="a4-report-container animate-fade-in flex-col gap-xl">
       <div className="a4-page">
@@ -165,13 +171,19 @@ export default function InspectionReportView({ inspection, template, machine }: 
                             )}
                           </td>
                           <td>
-                            {val?.mediaUrls && val.mediaUrls.length > 0 ? (
-                              <div className="a4-evidence-indicator">
-                                📸 แนบรูปภาพ {val.mediaUrls.length} รูป
-                              </div>
-                            ) : (
-                              <span className="lbl-empty">—</span>
-                            )}
+                            {(() => {
+                              const fieldPhotos = fieldsWithPhotos.filter(p => p.field.id === field.id);
+                              if (fieldPhotos.length === 0) return <span className="lbl-empty">—</span>;
+                              return (
+                                <div className="a4-evidence-tag-group">
+                                  {fieldPhotos.map(p => (
+                                    <span key={p.index} className="a4-evidence-tag" title={`ดูรูปหลักฐาน #${p.index} ในภาคผนวก`}>
+                                      📸 รูปที่ #{p.index}
+                                    </span>
+                                  ))}
+                                </div>
+                              );
+                            })()}
                           </td>
                         </tr>
                       );
@@ -233,45 +245,65 @@ export default function InspectionReportView({ inspection, template, machine }: 
 
       </div>
 
-      {/* Appendix Photo Pages */}
-      {fieldsWithPhotos.map((photo, index) => (
-        <div key={`${photo.field.id}-${index}`} className="a4-page a4-appendix-page">
-          <div className="a4-appendix-header border-b-2 border-black pb-md mb-lg">
-            <div className="flex justify-between items-start mb-md">
-              <h2 className="text-xl font-bold font-inter text-slate-800 tracking-tight">ภาคผนวก {index + 1}: หลักฐานรูปภาพ</h2>
+      {/* Appendix Photo Pages (9 photos per A4 page) */}
+      {photoPages.map((pagePhotos, pageIdx) => (
+        <div key={pageIdx} className="a4-page a4-appendix-page">
+          <div className="a4-appendix-header border-b-2 border-slate-800 pb-2 mb-3">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                  ภาคผนวก: หลักฐานรูปภาพ {photoPages.length > 1 ? `(หน้า ${pageIdx + 1}/${photoPages.length})` : ''}
+                </h2>
+                <div className="text-xs text-slate-500">
+                  รูปภาพทั้งหมด {fieldsWithPhotos.length} รูป
+                </div>
+              </div>
               <div className="text-right">
-                <div className="font-bold text-slate-800">{machine.name}</div>
-                <div className="text-xs text-slate-500">หมายเลขเครื่อง: {machine.machineNo}</div>
-              </div>
-            </div>
-            
-            <div className="bg-slate-50 p-md rounded border border-slate-200 grid grid-cols-2 gap-md">
-              <div>
-                <div className="text-xs font-bold text-slate-500 uppercase mb-xs">หมวดหมู่</div>
-                <div className="text-sm font-semibold text-slate-800">{photo.section.title}</div>
-              </div>
-              <div>
-                <div className="text-xs font-bold text-slate-500 uppercase mb-xs">รายการตรวจสอบ</div>
-                <div className="text-sm font-semibold text-slate-800">{photo.field.label}</div>
-              </div>
-              <div className="col-span-2 border-t border-slate-200 pt-sm mt-sm">
-                <span className="text-xs font-bold text-slate-500 uppercase mr-md">ผลที่บันทึก:</span>
-                <span className={`inline-block px-sm py-xs rounded font-bold text-sm ${
-                  String(photo.value.value).match(/NG|fail|Fail/i) ? 'bg-red-100 text-red-700' : 
-                  String(photo.value.value).match(/OK|pass|Pass/i) ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-800'
-                }`}>
-                  {String(photo.value.value)} {photo.field.unit || ''}
-                </span>
+                <div className="font-bold text-slate-800 text-xs">{machine.name}</div>
+                <div className="text-[11px] text-slate-500">หมายเลขเครื่อง: {machine.machineNo}</div>
               </div>
             </div>
           </div>
           
-          <div className="a4-appendix-body flex items-center justify-center" style={{ height: 'calc(100% - 150px)', overflow: 'hidden' }}>
-            <img 
-              src={photo.url} 
-              alt={`Evidence for ${photo.field.label}`} 
-              className="appendix-photo-lg w-full h-full object-contain rounded border border-slate-200" 
-            />
+          <div className="a4-appendix-grid">
+            {pagePhotos.map((photo) => {
+              const displayVal = photo.value?.value !== undefined && photo.value?.value !== null ? photo.value.value : "—";
+              const isFail = String(displayVal).match(/NG|fail|Fail|Overload/i);
+              const isPass = String(displayVal).match(/OK|pass|Pass/i);
+
+              return (
+                <div key={`${photo.field.id}-${photo.index}`} className="appendix-card">
+                  <div className="relative">
+                    <img 
+                      src={photo.url} 
+                      alt={`Evidence for ${photo.field.label}`} 
+                      className="appendix-card-img" 
+                    />
+                    <span className="absolute top-1 left-1 bg-slate-900/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                      #{photo.index}
+                    </span>
+                  </div>
+                  <div className="appendix-card-info">
+                    <div className="text-[10px] text-slate-500 font-medium truncate" title={photo.section.title}>
+                      {photo.section.title}
+                    </div>
+                    <div className="text-xs font-bold text-slate-800 truncate" title={photo.field.label}>
+                      {photo.field.label}
+                    </div>
+                    <div className="flex items-center justify-between mt-auto pt-1 border-t border-slate-100">
+                      <span className="text-[10px] text-slate-500">ผลที่บันทึก:</span>
+                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${
+                        isFail ? 'bg-red-100 text-red-700' : 
+                        isPass ? 'bg-green-100 text-green-700' : 
+                        'bg-slate-100 text-slate-800'
+                      }`}>
+                        {String(displayVal)} {photo.field.unit && displayVal !== '—' ? photo.field.unit : ''}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}

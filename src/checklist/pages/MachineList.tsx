@@ -35,7 +35,7 @@ export default function MachineList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<Machine>>({
     name: '', type: '', machineNo: '', location: '', projectName: '',
-    brand: '', serialNumber: '', status: 'active', assignedTemplateId: '',
+    brand: '', serialNumber: '', contractNo: '', registrationNo: '', status: 'active', assignedTemplateId: '',
   });
 
   const getMachineStats = (machineId: string) => {
@@ -54,8 +54,10 @@ export default function MachineList() {
       m.name.toLowerCase().includes(search.toLowerCase()) ||
       m.type.toLowerCase().includes(search.toLowerCase()) ||
       m.location.toLowerCase().includes(search.toLowerCase()) ||
-      m.machineNo.toLowerCase().includes(search.toLowerCase());
-    
+      m.machineNo.toLowerCase().includes(search.toLowerCase()) ||
+      (m.contractNo && m.contractNo.toLowerCase().includes(search.toLowerCase())) ||
+      (m.registrationNo && m.registrationNo.toLowerCase().includes(search.toLowerCase()));
+
     let matchesPeriod = true;
     if (filterPeriod === '7d') {
       matchesPeriod = !!stats.lastVisit && (new Date().getTime() - stats.lastVisit.getTime()) <= 7 * 24 * 60 * 60 * 1000;
@@ -93,7 +95,7 @@ export default function MachineList() {
   };
 
   const resetForm = () => {
-    setForm({ name: '', type: '', machineNo: '', location: '', projectName: '', brand: '', serialNumber: '', status: 'active', assignedTemplateId: '' });
+    setForm({ name: '', type: '', machineNo: '', location: '', projectName: '', brand: '', serialNumber: '', contractNo: '', registrationNo: '', status: 'active', assignedTemplateId: '' });
     setEditingId(null);
     setShowForm(false);
   };
@@ -201,6 +203,8 @@ export default function MachineList() {
                           <div className="font-semibold">{machine.name}</div>
                           <div className="text-xs text-tertiary">
                             {machine.brand && `${machine.brand} · `}{machine.machineNo}
+                            {machine.contractNo && <span style={{ color: 'var(--accent-blue)', marginLeft: '6px' }}>· สัญญา: {machine.contractNo}</span>}
+                            {machine.registrationNo && <span style={{ color: 'var(--accent-green)', marginLeft: '6px' }}>· ทะเบียน: {machine.registrationNo}</span>}
                           </div>
                         </div>
                       </div>
@@ -314,6 +318,14 @@ export default function MachineList() {
                     <option value="maintenance">Maintenance</option>
                     <option value="inactive">Inactive</option>
                   </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">เลขที่สัญญา</label>
+                  <input className="form-input" value={form.contractNo || ''} onChange={(e) => setForm(p => ({ ...p, contractNo: e.target.value }))} placeholder="e.g. CT-2024-001" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">จดทะเบียนเครื่องจักร</label>
+                  <input className="form-input" value={form.registrationNo || ''} onChange={(e) => setForm(p => ({ ...p, registrationNo: e.target.value }))} placeholder="e.g. จดทะเบียนแล้ว (เลขที่ 1234/67)" />
                 </div>
                 <div className="form-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">กำหนดแม่แบบ</label>

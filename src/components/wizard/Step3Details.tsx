@@ -3,7 +3,8 @@
 // ==========================================
 import React from 'react';
 import type { VisitReport } from '../../types/report';
-import PhotoCapture from '../PhotoCapture';
+import CategorizedPhotoSection from '../CategorizedPhotoSection';
+import VisitDetailAutoFill from '../VisitDetailAutoFill';
 
 interface Props {
   report: VisitReport;
@@ -17,12 +18,20 @@ export default function Step3Details({ report, onChange }: Props) {
         📝 รายละเอียดการเข้าเยี่ยม
       </h2>
 
-      <div>
+      <div className="space-y-3">
         <label className="block text-sm font-bold text-slate-700 mb-1">รายละเอียดการเข้าเยี่ยม</label>
+        
+        {/* Interactive AutoFill Selector */}
+        <VisitDetailAutoFill
+          companyName={report.companyName}
+          currentValue={report.visitDetail}
+          onChange={(visitDetail) => onChange({ visitDetail })}
+        />
+
         <textarea
           value={report.visitDetail}
           onChange={(e) => onChange({ visitDetail: e.target.value })}
-          placeholder="บรรยายรายละเอียดการเข้าเยี่ยม"
+          placeholder="บรรยายรายละเอียดการเข้าเยี่ยม หรือเลือกจากปุ่มตัวช่วยด้านบน"
           rows={6}
           className="w-full px-4 py-3 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400 resize-y
             focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs"
@@ -41,10 +50,11 @@ export default function Step3Details({ report, onChange }: Props) {
         />
       </div>
 
-      <PhotoCapture
-        label="📷 รูปภาพ"
-        photos={report.machinePhotos}
-        onChange={(photos) => onChange({ machinePhotos: photos })}
+      <CategorizedPhotoSection
+        sitePhotos={report.sitePhotos || []}
+        machinePhotos={report.machinePhotos || []}
+        onSitePhotosChange={(sitePhotos) => onChange({ sitePhotos })}
+        onMachinePhotosChange={(machinePhotos) => onChange({ machinePhotos })}
       />
 
       <div>

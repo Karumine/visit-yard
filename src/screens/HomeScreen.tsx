@@ -262,7 +262,7 @@ export default function HomeScreen() {
 
         {/* Footer */}
         <div className="text-center text-xs text-slate-500 mt-12 pb-8">
-          Visit Yard Report v1.0 • ข้อมูลถูกเก็บในเครื่องนี้เท่านั้น
+          Visit Yard Report v1.0 • เชื่อมต่อฐานข้อมูล Firebase Cloud Sync ☁️
         </div>
       </div>
 

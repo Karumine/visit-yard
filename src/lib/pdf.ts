@@ -6,17 +6,38 @@ import type { VisitReport } from '../types/report';
 import { toThaiDateFull } from './thaidate';
 import { calculateAverageScore } from '../types/report';
 
-/** Convert Blob to Data URL */
-function photoToDataUrl(blob: Blob): Promise<string> {
+/** Convert Photo object or Blob to Data URL */
+function photoToDataUrl(p: any): Promise<string> {
   return new Promise((resolve) => {
-    if (!blob) {
+    if (!p) {
       resolve('');
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(blob);
+    if (typeof p === 'string') {
+      resolve(p);
+      return;
+    }
+    if (p.url) {
+      resolve(p.url);
+      return;
+    }
+    if (p.blobBase64) {
+      resolve(p.blobBase64);
+      return;
+    }
+    if (p.blob instanceof Blob) {
+      try {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(p.blob);
+        return;
+      } catch {
+        resolve('');
+        return;
+      }
+    }
+    resolve('');
   });
 }
 
@@ -24,15 +45,17 @@ function photoToDataUrl(blob: Blob): Promise<string> {
 export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvasElement> {
   // Convert photo blobs to data URLs
   const machinePhotoUrls = await Promise.all(
-    (report.machinePhotos || []).map(async (p) => ({
-      url: await photoToDataUrl(p.blob),
-      label: 'รูปภาพ',
+    (report.machinePhotos || []).map(async (p: any) => ({
+      url: await photoToDataUrl(p),
+      label: p.category || 'รูปภาพเครื่องจักร',
+      caption: p.caption || '',
     }))
   );
   const sitePhotoUrls = await Promise.all(
-    (report.sitePhotos || []).map(async (p) => ({
-      url: await photoToDataUrl(p.blob),
-      label: 'รูปภาพ',
+    (report.sitePhotos || []).map(async (p: any) => ({
+      url: await photoToDataUrl(p),
+      label: p.category || 'รูปภาพหน้างาน',
+      caption: p.caption || '',
     }))
   );
   const allPhotoItems = [...machinePhotoUrls, ...sitePhotoUrls].filter((p) => p.url);
@@ -49,7 +72,8 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
   container.style.left = '-9999px';
   container.style.top = '0';
   container.style.width = '794px';
-  container.style.height = '1123px';
+  const appendixPages = allPhotoItems.length > 0 ? Math.ceil(allPhotoItems.length / 9) : 0;
+  container.style.height = `${1123 * (1 + appendixPages)}px`;
   container.style.backgroundColor = '#ffffff';
   container.style.color = '#0f172a';
   container.style.fontFamily = "'Sarabun', 'Prompt', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
@@ -305,6 +329,53 @@ export async function generatePDFCanvas(report: VisitReport): Promise<HTMLCanvas
         <div style="font-size: 8.5px; color: #475569; margin-top: 1px; line-height: 1.3;">วันที่: ..... / ..... / ..........</div>
       </div>
     </div>
+
+    ${allPhotoItems.length > 0 ? (() => {
+      const PHOTOS_PER_PAGE = 9;
+      const pagesCount = Math.ceil(allPhotoItems.length / PHOTOS_PER_PAGE);
+      let html = '';
+      for (let pageIdx = 0; pageIdx < pagesCount; pageIdx++) {
+        const pagePhotos = allPhotoItems.slice(pageIdx * PHOTOS_PER_PAGE, (pageIdx + 1) * PHOTOS_PER_PAGE);
+        html += `
+          <div style="margin-top: 40px; padding-top: 20px; page-break-before: always; height: 1080px; box-sizing: border-box;">
+            <!-- Appendix Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1B3A5F; padding-bottom: 6px; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="/Logo_Agile Assets_CMYK.png" style="height: 28px; object-fit: contain;" onerror="this.src='/logo.png'" />
+                <div>
+                  <div style="font-size: 14px; font-weight: bold; color: #1B3A5F; line-height: 1.2;">ภาคผนวก: รูปภาพประกอบการเข้าเยี่ยม</div>
+                  <div style="font-size: 9.5px; color: #64748b;">Agile Assets — Customer/Yard Visit Report (หน้า ${pageIdx + 2})</div>
+                </div>
+              </div>
+              <div style="text-align: right; font-size: 10px; color: #334155;">
+                <div><strong style="color: #1B3A5F;">บริษัท:</strong> ${report.companyName || '-'}</div>
+                <div><strong style="color: #1B3A5F;">วันที่เข้าเยี่ยม:</strong> ${toThaiDateFull(report.visitDate)}</div>
+              </div>
+            </div>
+
+            <!-- 3x3 Photo Grid (9 Photos per A4 page) -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+              ${pagePhotos.map((p, idx) => {
+                const photoNo = pageIdx * PHOTOS_PER_PAGE + idx + 1;
+                return `
+                  <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; background: #fff; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; font-weight: bold; color: #1B3A5F; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0;">
+                      <span>📸 รูปที่ #${photoNo}</span>
+                      <span style="font-size: 8.5px; background: #eff6ff; color: #1d4ed8; padding: 2px 5px; border-radius: 3px; border: 1px solid #bfdbfe;">${p.label || 'หลักฐาน'}</span>
+                    </div>
+                    <div style="height: 120px; border-radius: 4px; background: #f8fafc; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0;">
+                      <img src="${p.url}" style="width: 100%; height: 100%; object-fit: cover;" />
+                    </div>
+                    ${p.caption ? `<div style="font-size: 9.5px; color: #475569; margin-top: 6px; line-height: 1.2;">${p.caption}</div>` : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+      return html;
+    })() : ''}
   `;
 
   document.body.appendChild(container);

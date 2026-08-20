@@ -11,6 +11,8 @@ export interface Machine {
   projectName: string;
   brand?: string;
   serialNumber?: string;
+  contractNo?: string;      // เลขที่สัญญา
+  registrationNo?: string;  // จดทะเบียนเครื่องจักร
   installDate?: string;
   lastInspectionDate?: string;
   status: 'active' | 'inactive' | 'maintenance';
