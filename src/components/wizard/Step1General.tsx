@@ -5,6 +5,8 @@ import React from 'react';
 import type { VisitReport, EntityType } from '../../types/report';
 import ThaiDatePicker from '../ThaiDatePicker';
 
+import NumberStepper from '../NumberStepper';
+
 interface Props {
   report: VisitReport;
   onChange: (partial: Partial<VisitReport>) => void;
@@ -55,20 +57,12 @@ export default function Step1General({ report, onChange }: Props) {
           onChange={(v) => onChange({ visitDate: v })}
           required
         />
-        <div>
-          <label className="block text-sm font-bold text-slate-700 mb-1">
-            ครั้งที่เข้าเยี่ยม
-          </label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min={1}
-            value={report.visitNo}
-            onChange={(e) => onChange({ visitNo: parseInt(e.target.value) || 1 })}
-            className="w-full min-h-touch px-4 py-3 text-base border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400
-              focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-xs"
-          />
-        </div>
+        <NumberStepper
+          label="ครั้งที่เข้าเยี่ยม"
+          value={report.visitNo}
+          onChange={(v) => onChange({ visitNo: v })}
+          min={1}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
