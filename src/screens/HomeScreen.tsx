@@ -2,6 +2,7 @@
 // HomeScreen — รายการรายงาน
 // ==========================================
 import React, { useEffect, useState } from 'react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { useAppStore } from '../lib/store';
 import { calculateAverageScore, VisitReport } from '../types/report';
 import { toThaiDateFull } from '../lib/thaidate';
@@ -12,12 +13,13 @@ import PDFPreviewModal from '../components/PDFPreviewModal';
 type FilterStatus = 'all' | 'draft' | 'completed';
 
 export default function HomeScreen() {
-  const { reports, loadReports, createNewReport, openReport, viewReport, deleteReport, duplicateReport } = useAppStore();
+  const { reports, loadReports, isLoading, createNewReport, openReport, viewReport, deleteReport, duplicateReport } = useAppStore();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [previewReport, setPreviewReport] = useState<VisitReport | null>(null);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadReports();
@@ -72,8 +74,8 @@ export default function HomeScreen() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 text-slate-900 px-6 py-5 shadow-xs">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-1">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <div className="bg-slate-100 rounded-xl px-3.5 py-1.5 shadow-xs flex items-center justify-center border border-slate-200">
               <img
                 src="/Logo_Agile Assets_CMYK.png"
@@ -83,10 +85,29 @@ export default function HomeScreen() {
               />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">รายงานการเข้าเยี่ยม ลูกค้า/Yard</h1>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-xl font-bold text-slate-900">รายงานการเข้าเยี่ยม ลูกค้า/Yard</h1>
+                {isLoading && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200 animate-pulse">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                    <span>กำลังโหลด...</span>
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-slate-500">Agile Assets — Visit Report System</p>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => loadReports()}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-blue-600 text-xs font-semibold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+            title="รีเฟรชข้อมูลรายงาน"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
+            <span className="hidden sm:inline">รีเฟรช</span>
+          </button>
         </div>
       </header>
 
@@ -157,8 +178,35 @@ export default function HomeScreen() {
           </button>
         </div>
 
-        {/* Report Cards */}
-        {filtered.length === 0 ? (
+        {/* Report Cards / Loading State */}
+        {isLoading && reports.length === 0 ? (
+          <div className="py-12 space-y-4">
+            <div className="bg-white rounded-2xl border border-blue-100 p-8 shadow-xs text-center flex flex-col items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mb-3">
+                <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+              </div>
+              <h3 className="text-base font-bold text-slate-800">กำลังโหลดข้อมูลรายงานการเข้าเยี่ยม...</h3>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                กรุณารอสักครู่ ระบบกำลังดึงข้อมูลรายงานล่าสุดจากฐานข้อมูล
+              </p>
+            </div>
+
+            {/* Skeleton Cards preview */}
+            <div className="space-y-3 opacity-60">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2 flex-1">
+                      <div className="h-4 bg-slate-200 rounded w-1/3" />
+                      <div className="h-3 bg-slate-100 rounded w-1/4" />
+                    </div>
+                    <div className="w-16 h-6 bg-slate-100 rounded-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-16 text-slate-400">
             <div className="text-6xl mb-4">📄</div>
             <p className="text-lg font-medium text-slate-700">ยังไม่มีรายงาน</p>
@@ -168,6 +216,7 @@ export default function HomeScreen() {
           <div className="space-y-3">
             {filtered.map((report) => {
               const avg = calculateAverageScore(report.scores);
+              const isOpening = actionLoadingId === report.id;
               return (
                 <div
                   key={report.id}
@@ -181,8 +230,14 @@ export default function HomeScreen() {
                     {/* Main content */}
                     <button
                       type="button"
+                      disabled={isOpening}
                       onClick={async () => {
-                        await viewReport(report.id);
+                        setActionLoadingId(report.id);
+                        try {
+                          await viewReport(report.id);
+                        } finally {
+                          setActionLoadingId(null);
+                        }
                       }}
                       className="flex-1 px-5 py-4 text-left cursor-pointer"
                     >
@@ -196,18 +251,27 @@ export default function HomeScreen() {
                           </p>
                         </div>
                         <div className="flex items-center gap-3 ml-3">
-                          {avg !== null && (
-                            <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-bold border border-blue-200">
-                              ⭐ {avg.toFixed(1)}
+                          {isOpening ? (
+                            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                              <span>กำลังเปิด...</span>
                             </div>
+                          ) : (
+                            <>
+                              {avg !== null && (
+                                <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-bold border border-blue-200">
+                                  ⭐ {avg.toFixed(1)}
+                                </div>
+                              )}
+                              <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                report.status === 'completed'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
+                              }`}>
+                                {report.status === 'completed' ? 'เสร็จแล้ว' : 'ร่าง'}
+                              </span>
+                            </>
                           )}
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                            report.status === 'completed'
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-amber-50 text-amber-700 border border-amber-200'
-                          }`}>
-                            {report.status === 'completed' ? 'เสร็จแล้ว' : 'ร่าง'}
-                          </span>
                         </div>
                       </div>
                     </button>
@@ -220,7 +284,7 @@ export default function HomeScreen() {
                           e.stopPropagation();
                           setMenuOpen(menuOpen === report.id ? null : report.id);
                         }}
-                        className="min-w-touch min-h-touch flex items-center justify-center text-slate-400 hover:text-slate-700 active:scale-95 transition-all"
+                        className="min-w-touch min-h-touch flex items-center justify-center text-slate-400 hover:text-slate-700 active:scale-95 transition-all cursor-pointer"
                       >
                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
@@ -230,24 +294,24 @@ export default function HomeScreen() {
                       {menuOpen === report.id && (
                         <div className="absolute right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-40 min-w-[160px] py-1 overflow-hidden">
                           <button onClick={() => { openReport(report.id); setMenuOpen(null); }}
-                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
                             📂 เปิด
                           </button>
                           <button onClick={() => { duplicateReport(report.id); setMenuOpen(null); }}
-                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
                             📋 ทำสำเนา
                           </button>
                           <button onClick={() => { setPreviewReport(report); setMenuOpen(null); }}
-                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
                             👁️ ดูตัวอย่าง (Preview)
                           </button>
                           <button onClick={() => handleExportJSON(report.id)}
-                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                            className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
                             💾 Export JSON
                           </button>
                           <hr className="my-1 border-slate-200" />
                           <button onClick={() => setConfirmDelete(report.id)}
-                            className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                            className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer">
                             🗑️ ลบ
                           </button>
                         </div>

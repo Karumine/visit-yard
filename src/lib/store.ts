@@ -21,6 +21,8 @@ interface AppState {
   // Report list
   reports: VisitReport[];
   loadReports: () => Promise<void>;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
 
   // Report operations
   createNewReport: () => void;
@@ -49,9 +51,18 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCurrentStep: (step) => set({ currentStep: step }),
 
   reports: [],
+  isLoading: false,
+  setIsLoading: (isLoading) => set({ isLoading }),
   loadReports: async () => {
-    const reports = await storageService.getAllReports();
-    set({ reports });
+    set({ isLoading: true });
+    try {
+      const reports = await storageService.getAllReports();
+      set({ reports });
+    } catch (err) {
+      console.error('Failed to load reports', err);
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   createNewReport: () => {
@@ -92,15 +103,25 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   deleteReport: async (id) => {
-    await storageService.deleteReport(id);
-    const reports = await storageService.getAllReports();
-    set({ reports });
+    set({ isLoading: true });
+    try {
+      await storageService.deleteReport(id);
+      const reports = await storageService.getAllReports();
+      set({ reports });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   duplicateReport: async (id) => {
-    await storageService.duplicateReport(id);
-    const reports = await storageService.getAllReports();
-    set({ reports });
+    set({ isLoading: true });
+    try {
+      await storageService.duplicateReport(id);
+      const reports = await storageService.getAllReports();
+      set({ reports });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   lastSaved: null,
