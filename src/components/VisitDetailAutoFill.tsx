@@ -2,6 +2,7 @@
 // VisitDetailAutoFill — ตัวช่วยสร้างข้อความรายละเอียดการเข้าเยี่ยมอัตโนมัติ
 // ==========================================
 import React, { useState, useEffect } from 'react';
+import { X, RotateCcw } from 'lucide-react';
 
 interface Props {
   companyName?: string;
@@ -151,6 +152,53 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
     saveOptionsToStorage(roles, brands, next);
   };
 
+  // Delete Custom Options Handlers
+  const handleDeleteRole = (item: string) => {
+    if (!window.confirm(`ต้องการลบตัวเลือก "${item}" หรือไม่?`)) return;
+    const next = roles.filter((r) => r !== item);
+    setRoles(next);
+    setSelectedRoles((prev) => prev.filter((r) => r !== item));
+    saveOptionsToStorage(next, brands, machines);
+  };
+
+  const handleDeleteBrand = (item: string) => {
+    if (!window.confirm(`ต้องการลบแบรนด์ "${item}" หรือไม่?`)) return;
+    const next = brands.filter((b) => b !== item);
+    setBrands(next);
+    setSelectedBrands((prev) => prev.filter((b) => b !== item));
+    saveOptionsToStorage(roles, next, machines);
+  };
+
+  const handleDeleteMachine = (item: string) => {
+    if (!window.confirm(`ต้องการลบประเภทเครื่องจักร "${item}" หรือไม่?`)) return;
+    const next = machines.filter((m) => m !== item);
+    setMachines(next);
+    setSelectedMachines((prev) => prev.filter((m) => m !== item));
+    saveOptionsToStorage(roles, brands, next);
+  };
+
+  // Check if any custom options exist
+  const hasCustomOptions =
+    roles.some((r) => !DEFAULT_ROLES.includes(r)) ||
+    brands.some((b) => !DEFAULT_BRANDS.includes(b)) ||
+    machines.some((m) => !DEFAULT_MACHINES.includes(m));
+
+  // Reset all custom options back to defaults
+  const handleResetToDefault = () => {
+    if (!window.confirm('ต้องการล้างตัวเลือกที่เพิ่มเองทั้งหมด และคืนค่าเป็นค่าเริ่มต้นใช่หรือไม่?')) return;
+    setRoles(DEFAULT_ROLES);
+    setBrands(DEFAULT_BRANDS);
+    setMachines(DEFAULT_MACHINES);
+    setSelectedRoles((prev) => prev.filter((r) => DEFAULT_ROLES.includes(r)));
+    setSelectedBrands((prev) => prev.filter((b) => DEFAULT_BRANDS.includes(b)));
+    setSelectedMachines((prev) => prev.filter((m) => DEFAULT_MACHINES.includes(m)));
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      console.warn('Failed to clear custom options from localStorage', e);
+    }
+  };
+
   // Generate Automated Summary Sentence
   const generateText = () => {
     const parts: string[] = [];
@@ -219,13 +267,27 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
           </div>
         </button>
 
-        <button
-          type="button"
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="px-3 py-1.5 rounded-xl bg-white border border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-50 shadow-2xs"
-        >
-          {isExpanded ? 'ย่อซ่อน 🔼' : 'แสดงตัวเลือก 🔽'}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          {hasCustomOptions && (
+            <button
+              type="button"
+              onClick={handleResetToDefault}
+              className="px-2.5 py-1.5 rounded-xl bg-white border border-rose-200 text-rose-600 text-xs font-bold hover:bg-rose-50 shadow-2xs flex items-center gap-1 transition-colors cursor-pointer"
+              title="ล้างตัวเลือกที่เพิ่มเองทั้งหมด และคืนค่าเริ่มต้น"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">คืนค่าเริ่มต้น</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="px-3 py-1.5 rounded-xl bg-white border border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-50 shadow-2xs cursor-pointer"
+          >
+            {isExpanded ? 'ย่อซ่อน 🔼' : 'แสดงตัวเลือก 🔽'}
+          </button>
+        </div>
       </div>
 
       {/* Expanded Options Content */}
@@ -244,20 +306,45 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
             <div className="flex flex-wrap gap-2 mb-3">
               {roles.map((r) => {
                 const isSelected = selectedRoles.includes(r);
+                const isCustom = !DEFAULT_ROLES.includes(r);
                 return (
-                  <button
+                  <div
                     key={r}
-                    type="button"
-                    onClick={() => toggleRole(r)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 ${
+                    className={`inline-flex items-center rounded-lg text-xs font-medium border transition-all ${
                       isSelected
                         ? 'bg-blue-600 text-white border-blue-600 font-bold shadow-xs'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-blue-300'
                     }`}
                   >
-                    <span>{isSelected ? '✓' : '+'}</span>
-                    <span>{r}</span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleRole(r)}
+                      className={`py-1.5 flex items-center gap-1.5 text-left cursor-pointer ${
+                        isCustom ? 'pl-2.5 pr-1.5' : 'px-3'
+                      }`}
+                    >
+                      <span className="text-[11px]">{isSelected ? '✓' : '+'}</span>
+                      <span>{r}</span>
+                    </button>
+                    {isCustom && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteRole(r);
+                        }}
+                        title={`ลบตัวเลือก "${r}"`}
+                        aria-label={`ลบ ${r}`}
+                        className={`mr-1 p-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center ${
+                          isSelected
+                            ? 'text-blue-100 hover:text-white hover:bg-blue-700'
+                            : 'text-slate-400 hover:text-rose-600 hover:bg-rose-100'
+                        }`}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -273,7 +360,7 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
               />
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-bold transition-all"
+                className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 + เพิ่ม
               </button>
@@ -293,20 +380,45 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
             <div className="flex flex-wrap gap-2 mb-3">
               {brands.map((b) => {
                 const isSelected = selectedBrands.includes(b);
+                const isCustom = !DEFAULT_BRANDS.includes(b);
                 return (
-                  <button
+                  <div
                     key={b}
-                    type="button"
-                    onClick={() => toggleBrand(b)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 ${
+                    className={`inline-flex items-center rounded-lg text-xs font-medium border transition-all ${
                       isSelected
                         ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-xs'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-indigo-300'
                     }`}
                   >
-                    <span>{isSelected ? '✓' : '+'}</span>
-                    <span>{b}</span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleBrand(b)}
+                      className={`py-1.5 flex items-center gap-1.5 text-left cursor-pointer ${
+                        isCustom ? 'pl-2.5 pr-1.5' : 'px-3'
+                      }`}
+                    >
+                      <span className="text-[11px]">{isSelected ? '✓' : '+'}</span>
+                      <span>{b}</span>
+                    </button>
+                    {isCustom && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteBrand(b);
+                        }}
+                        title={`ลบแบรนด์ "${b}"`}
+                        aria-label={`ลบ ${b}`}
+                        className={`mr-1 p-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center ${
+                          isSelected
+                            ? 'text-indigo-100 hover:text-white hover:bg-indigo-700'
+                            : 'text-slate-400 hover:text-rose-600 hover:bg-rose-100'
+                        }`}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -322,7 +434,7 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
               />
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-xs font-bold transition-all"
+                className="px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 + เพิ่ม
               </button>
@@ -342,20 +454,45 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
             <div className="flex flex-wrap gap-2 mb-3">
               {machines.map((m) => {
                 const isSelected = selectedMachines.includes(m);
+                const isCustom = !DEFAULT_MACHINES.includes(m);
                 return (
-                  <button
+                  <div
                     key={m}
-                    type="button"
-                    onClick={() => toggleMachine(m)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 ${
+                    className={`inline-flex items-center rounded-lg text-xs font-medium border transition-all ${
                       isSelected
                         ? 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-xs'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-emerald-300'
                     }`}
                   >
-                    <span>{isSelected ? '✓' : '+'}</span>
-                    <span>{m}</span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleMachine(m)}
+                      className={`py-1.5 flex items-center gap-1.5 text-left cursor-pointer ${
+                        isCustom ? 'pl-2.5 pr-1.5' : 'px-3'
+                      }`}
+                    >
+                      <span className="text-[11px]">{isSelected ? '✓' : '+'}</span>
+                      <span>{m}</span>
+                    </button>
+                    {isCustom && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteMachine(m);
+                        }}
+                        title={`ลบประเภทเครื่องจักร "${m}"`}
+                        aria-label={`ลบ ${m}`}
+                        className={`mr-1 p-1 rounded-md text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center ${
+                          isSelected
+                            ? 'text-emerald-100 hover:text-white hover:bg-emerald-700'
+                            : 'text-slate-400 hover:text-rose-600 hover:bg-rose-100'
+                        }`}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -371,7 +508,7 @@ export default function VisitDetailAutoFill({ companyName = '', currentValue, on
               />
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-bold transition-all"
+                className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-bold transition-all cursor-pointer"
               >
                 + เพิ่ม
               </button>
